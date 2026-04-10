@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hub de Matérias — Administração PUCPR</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0f14;--surface:#16181f;--surface2:#1e2030;--border:#2a2d3a;
+  --text:#e8eaf0;--muted:#8a8fa8;--muted2:#5a5f78;
+  --c1:#5b8dee;--c2:#4ecba4;--c3:#f5a623;--c4:#e05c6b;
+  --c5:#9b7fe8;--c6:#3dd4f5;--c7:#f0c040;--c8:#f06292;
+  --radius:14px;--gap:18px;--sidebar:256px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.55;min-height:100vh;overflow-x:hidden}
+
+/* HUB HOME */
+#hub-screen{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+#hub-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(91,141,238,.11) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(155,127,232,.08) 0%,transparent 55%),radial-gradient(ellipse 40% 40% at 50% 50%,rgba(78,203,164,.05) 0%,transparent 50%);pointer-events:none}
+.hub-header{text-align:center;padding:60px 24px 36px;position:relative}
+.hub-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(91,141,238,.1);border:1px solid rgba(91,141,238,.25);color:var(--c1);border-radius:99px;padding:5px 16px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:22px}
+.hub-title{font-family:'Syne',sans-serif;font-size:clamp(36px,7vw,70px);font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.55) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.05;margin-bottom:10px}
+.hub-title span{background:linear-gradient(135deg,var(--c1) 0%,var(--c5) 60%,var(--c6) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hub-sub{font-size:15px;color:var(--muted);letter-spacing:.04em;margin-bottom:4px}
+.hub-author{font-size:12px;color:var(--muted2);letter-spacing:.08em;display:inline-flex;align-items:center;gap:8px;margin-top:2px}
+.hub-author::before,.hub-author::after{content:'';width:22px;height:1px;background:var(--muted2)}
+.hub-divider{width:56px;height:3px;background:linear-gradient(90deg,var(--c1),var(--c5));border-radius:99px;margin:24px auto 0}
+.hub-content{max-width:1100px;margin:0 auto;padding:40px 24px 80px;width:100%;position:relative}
+.hub-section-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:18px;display:flex;align-items:center;gap:12px}
+.hub-section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:40px}
+.subject-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.subject-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--card-line,rgba(91,141,238,.5)),transparent);opacity:.8}
+.subject-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.12);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.subject-card.future{border-style:dashed;opacity:.55;cursor:default}
+.subject-card.future:hover{transform:none;box-shadow:none}
+.sc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.sc-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--icon-bg,rgba(91,141,238,.12));flex-shrink:0}
+.sc-status{font-size:10px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:.07em;padding:4px 10px;border-radius:99px;border:1px solid}
+.sc-status.active{background:rgba(78,203,164,.12);color:var(--c2);border-color:rgba(78,203,164,.3)}
+.sc-status.soon{background:rgba(255,255,255,.04);color:var(--muted);border-color:var(--border)}
+.sc-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:5px;line-height:1.2}
+.sc-desc{font-size:12.5px;color:var(--muted);line-height:1.55;margin-bottom:16px}
+.sc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.sc-tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)}
+.sc-tag.accent{background:var(--tag-bg,rgba(91,141,238,.12));color:var(--tag-color,var(--c1));border-color:var(--tag-border,rgba(91,141,238,.25))}
+.sc-arrow{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;font-weight:600;color:var(--card-color,var(--c1));transition:gap .2s}
+.subject-card:hover .sc-arrow{gap:10px}
+.hub-stats{display:flex;align-items:center;justify-content:center;gap:28px;padding:18px 24px;border:1px solid var(--border);border-radius:16px;margin-bottom:36px;flex-wrap:wrap;background:var(--surface)}
+.hub-stat{text-align:center}
+.hub-stat .hsv{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff}
+.hub-stat .hsl{font-size:11px;color:var(--muted);margin-top:2px}
+.hub-stat-sep{width:1px;height:36px;background:var(--border);flex-shrink:0}
+.hub-footer{text-align:center;padding:0 24px 40px;font-size:11px;color:var(--muted2);letter-spacing:.06em;text-transform:uppercase}
+
+/* SUBJECT APP LAYOUT */
+#subject-app{display:none;min-height:100vh}
+#subject-app.active{display:flex}
+#sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:200;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+#sb-header{padding:16px 14px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px}
+#sb-back{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s}
+#sb-back:hover{border-color:var(--c1);color:var(--c1)}
+#sb-subject-info .sb-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#fff;letter-spacing:.02em}
+#sb-subject-info .sb-course{font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+#sb-nav{padding:10px 7px;flex:1}
+.snav-group{margin-bottom:4px}
+.snav-label{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);padding:7px 11px 4px}
+.snav-item{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .18s;border:1px solid transparent;margin:1px 0}
+.snav-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.snav-item.active{background:rgba(91,141,238,.12);color:var(--c1);border-color:rgba(91,141,238,.2)}
+.snav-item .s-icon{width:27px;height:27px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:rgba(255,255,255,.04)}
+.snav-item.active .s-icon{background:rgba(91,141,238,.18)}
+.snav-item .s-label{flex:1}
+.snav-item .s-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:99px;background:rgba(91,141,238,.2);color:var(--c1);font-family:'Syne',sans-serif}
+.snav-item.mc-accent.active{background:rgba(78,203,164,.12);color:var(--c2);border-color:rgba(78,203,164,.2)}
+.snav-item.mc-accent .s-badge{background:rgba(78,203,164,.2);color:var(--c2)}
+#sb-progress{border-top:1px solid var(--border);padding:13px}
+.sp-title{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:9px}
+.sp-stat{display:flex;align-items:center;justify-content:space-between;padding:6px 9px;border-radius:8px;background:rgba(255,255,255,.03);margin-bottom:4px}
+.sp-stat-label{font-size:11px;color:var(--muted)}
+.sp-stat-val{font-size:12px;font-weight:700;font-family:'Syne',sans-serif;color:var(--text)}
+.sp-row{display:flex;align-items:center;gap:7px;margin-top:7px}
+.sp-label{font-size:11px;color:var(--muted);flex:1}
+.sp-val{font-size:11px;font-weight:700;color:var(--text);min-width:26px;text-align:right}
+.sp-bar{flex:1;height:4px;background:var(--border);border-radius:99px;overflow:hidden}
+.sp-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--c1),var(--c5));transition:width .6s ease}
+#main-content{margin-left:var(--sidebar);flex:1;min-width:0;transition:margin-left .3s}
+#main-inner{max-width:1060px;margin:0 auto;padding:30px 24px 80px}
+#menu-toggle{display:none;position:fixed;top:13px;left:13px;z-index:250;width:35px;height:35px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;align-items:center;justify-content:center;font-size:17px}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:190}
+@media(max-width:768px){
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #sidebar-overlay.open{display:block}
+  #main-content{margin-left:0}
+  #main-inner{padding:68px 15px 80px}
+  #menu-toggle{display:flex}
+}
+
+/* SEARCH */
+#search-wrap{position:relative;margin-bottom:24px}
+#search-input{width:100%;padding:12px 44px 12px 42px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+#search-input:focus{border-color:var(--c1)}
+#search-input::placeholder{color:var(--muted2)}
+#search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:15px;opacity:.4;pointer-events:none}
+#search-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;display:none}
+#search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:300;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:none;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.sr-item{display:flex;align-items:center;gap:11px;padding:10px 14px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(255,255,255,.03)}
+.sr-item:last-child{border-bottom:none}
+.sr-item:hover{background:rgba(255,255,255,.04)}
+.sr-tag{font-size:10px;padding:3px 7px;border-radius:6px;font-weight:600;background:rgba(91,141,238,.15);color:var(--c1);white-space:nowrap;flex-shrink:0}
+.sr-title{font-size:13px;font-weight:500;color:var(--text)}
+.sr-desc{font-size:11px;color:var(--muted)}
+
+/* PAGE VIEWS */
+.page-view{display:none}
+.page-view.active{display:block}
+.page-header{margin-bottom:26px}
+.page-header h1{font-family:'Syne',sans-serif;font-size:clamp(20px,3.5vw,36px);font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,var(--c1) 0%,var(--c5) 50%,var(--c6) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.15}
+.page-header .sub{font-size:13px;color:var(--muted);margin-top:5px;letter-spacing:.07em;text-transform:uppercase}
+.divider{width:50px;height:3px;background:linear-gradient(90deg,var(--c1),var(--c5));border-radius:99px;margin-top:11px}
+
+/* DASHBOARD */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:10px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px}
+.stat-card .st-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1}
+.stat-card .st-label{font-size:11px;color:var(--muted);margin-top:4px}
+.stat-card .st-sub{font-size:10px;color:var(--muted2);margin-top:2px}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px;margin-bottom:24px}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:17px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--card-accent,var(--c1));opacity:.6}
+.dash-card:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(0,0,0,.35);border-color:rgba(255,255,255,.1)}
+.dash-card-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:11px;background:var(--icon-bg,rgba(91,141,238,.12))}
+.dash-card h3{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.dash-card p{font-size:11.5px;color:var(--muted);line-height:1.4}
+.dc-badge{position:absolute;top:11px;right:11px;font-size:10px;font-weight:700;font-family:'Syne',sans-serif;padding:2px 7px;border-radius:99px;background:rgba(255,255,255,.06);color:var(--muted)}
+
+/* MIND MAP */
+.mind-map{display:flex;flex-direction:column;gap:26px}
+.center-node{background:linear-gradient(135deg,#1a2540 0%,#1d1a2e 100%);border:2px solid #3d4870;border-radius:18px;padding:20px 28px;text-align:center;position:relative;overflow:hidden}
+.center-node::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(91,141,238,.15) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(155,127,232,.12) 0%,transparent 60%);pointer-events:none}
+.center-node h2{font-family:'Syne',sans-serif;font-size:clamp(13px,2.2vw,21px);font-weight:800;letter-spacing:.04em;color:#fff;position:relative}
+.center-node .center-sub{font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:.06em;text-transform:uppercase;position:relative}
+.section-card{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface);transition:transform .2s,box-shadow .2s}
+.section-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.4)}
+.section-card.highlight{animation:pulse-border .7s ease}
+@keyframes pulse-border{0%{box-shadow:0 0 0 0 rgba(91,141,238,.6)}70%{box-shadow:0 0 0 8px rgba(91,141,238,0)}100%{box-shadow:0 0 0 0 rgba(91,141,238,0)}}
+.section-header{display:flex;align-items:center;gap:11px;padding:12px 16px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
+.section-number{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;opacity:.6;min-width:20px}
+.section-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(11px,1.8vw,14px);font-weight:700;flex:1;letter-spacing:.02em}
+.toggle-btn{font-size:16px;opacity:.5;transition:transform .25s;flex-shrink:0}
+.section-card.open .toggle-btn{transform:rotate(180deg)}
+.section-body{display:none;padding:15px;gap:var(--gap);flex-wrap:wrap}
+.section-card.open .section-body{display:flex}
+.branch{flex:1 1 230px;background:rgba(255,255,255,.03);border-radius:10px;padding:11px 13px;border-left:3px solid}
+.branch-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;opacity:.75}
+.branch ul{list-style:none;display:flex;flex-direction:column;gap:5px}
+.branch ul li{display:flex;gap:7px;font-size:12.5px;line-height:1.45;color:#c8cce0}
+.branch ul li::before{content:'→';flex-shrink:0;opacity:.4;font-size:10px;margin-top:3px}
+.branch ul li strong{color:var(--text);font-weight:500}
+.process-flow{display:flex;flex-wrap:wrap;gap:5px;align-items:center;padding:10px 13px;background:rgba(255,255,255,.02);border-radius:10px;flex:1 1 100%}
+.process-step{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:5px 10px;border-radius:8px;border:1px solid;line-height:1.3}
+.process-step .num{font-family:'Syne',sans-serif;font-size:10px;font-weight:800;opacity:.6;min-width:12px}
+.arrow-sep{color:var(--muted);font-size:13px}
+.alert-box{flex:1 1 100%;border-radius:10px;padding:10px 13px;font-size:13px;display:flex;gap:9px;align-items:flex-start;border-left:3px solid}
+.alert-box .icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.alert-box strong{font-weight:600}
+.triangle-grid{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:var(--gap)}
+.tri-card{flex:1 1 150px;border-radius:10px;padding:13px;text-align:center;border:1px solid var(--border)}
+.tri-card .tri-icon{font-size:22px;margin-bottom:5px}
+.tri-card .tri-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;margin-bottom:2px}
+.tri-card .tri-desc{font-size:11px;color:var(--muted)}
+.sigla-grid{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:8px}
+.sigla-item{flex:1 1 180px;background:rgba(255,255,255,.03);border-radius:8px;padding:9px 12px;border:1px solid var(--border);font-size:12px;line-height:1.4}
+.sigla-item .sigla-key{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;margin-bottom:3px}
+.sigla-item .sigla-val{color:var(--muted)}
+/* color accents */
+.section-card.c1 .section-header{border-bottom-color:rgba(91,141,238,.3);background:rgba(91,141,238,.05)}.section-card.c2 .section-header{border-bottom-color:rgba(78,203,164,.3);background:rgba(78,203,164,.05)}.section-card.c3 .section-header{border-bottom-color:rgba(245,166,35,.3);background:rgba(245,166,35,.05)}.section-card.c4 .section-header{border-bottom-color:rgba(224,92,107,.3);background:rgba(224,92,107,.05)}.section-card.c5 .section-header{border-bottom-color:rgba(155,127,232,.3);background:rgba(155,127,232,.05)}.section-card.c6 .section-header{border-bottom-color:rgba(61,212,245,.3);background:rgba(61,212,245,.05)}.section-card.c7 .section-header{border-bottom-color:rgba(240,192,64,.3);background:rgba(240,192,64,.05)}.section-card.c8 .section-header{border-bottom-color:rgba(240,98,146,.3);background:rgba(240,98,146,.05)}
+.branch.c1{border-left-color:var(--c1)}.branch.c2{border-left-color:var(--c2)}.branch.c3{border-left-color:var(--c3)}.branch.c4{border-left-color:var(--c4)}.branch.c5{border-left-color:var(--c5)}.branch.c6{border-left-color:var(--c6)}.branch.c7{border-left-color:var(--c7)}.branch.c8{border-left-color:var(--c8)}
+.section-icon.c1{background:rgba(91,141,238,.18);color:var(--c1)}.section-icon.c2{background:rgba(78,203,164,.18);color:var(--c2)}.section-icon.c3{background:rgba(245,166,35,.18);color:var(--c3)}.section-icon.c4{background:rgba(224,92,107,.18);color:var(--c4)}.section-icon.c5{background:rgba(155,127,232,.18);color:var(--c5)}.section-icon.c6{background:rgba(61,212,245,.18);color:var(--c6)}.section-icon.c7{background:rgba(240,192,64,.18);color:var(--c7)}.section-icon.c8{background:rgba(240,98,146,.18);color:var(--c8)}
+.section-title.c1{color:var(--c1)}.section-title.c2{color:var(--c2)}.section-title.c3{color:var(--c3)}.section-title.c4{color:var(--c4)}.section-title.c5{color:var(--c5)}.section-title.c6{color:var(--c6)}.section-title.c7{color:var(--c7)}.section-title.c8{color:var(--c8)}
+.process-step.c1{background:rgba(91,141,238,.1);border-color:rgba(91,141,238,.3);color:var(--c1)}.process-step.c2{background:rgba(78,203,164,.1);border-color:rgba(78,203,164,.3);color:var(--c2)}.process-step.c3{background:rgba(245,166,35,.1);border-color:rgba(245,166,35,.3);color:var(--c3)}.process-step.c4{background:rgba(224,92,107,.1);border-color:rgba(224,92,107,.3);color:var(--c4)}.process-step.c5{background:rgba(155,127,232,.1);border-color:rgba(155,127,232,.3);color:var(--c5)}.process-step.c7{background:rgba(240,192,64,.1);border-color:rgba(240,192,64,.3);color:var(--c7)}.process-step.c8{background:rgba(240,98,146,.1);border-color:rgba(240,98,146,.3);color:var(--c8)}
+.alert-box.c1{background:rgba(91,141,238,.07);border-left-color:var(--c1)}.alert-box.c2{background:rgba(78,203,164,.07);border-left-color:var(--c2)}.alert-box.c3{background:rgba(245,166,35,.07);border-left-color:var(--c3)}.alert-box.c4{background:rgba(224,92,107,.07);border-left-color:var(--c4)}.alert-box.c5{background:rgba(155,127,232,.07);border-left-color:var(--c5)}.alert-box.c7{background:rgba(240,192,64,.07);border-left-color:var(--c7)}.alert-box.c8{background:rgba(240,98,146,.07);border-left-color:var(--c8)}
+.tri-card.c1{background:rgba(91,141,238,.07);border-color:rgba(91,141,238,.3)}.tri-card.c2{background:rgba(78,203,164,.07);border-color:rgba(78,203,164,.3)}.tri-card.c3{background:rgba(245,166,35,.07);border-color:rgba(245,166,35,.3)}.tri-card.c4{background:rgba(224,92,107,.07);border-color:rgba(224,92,107,.3)}.tri-card.c5{background:rgba(155,127,232,.07);border-color:rgba(155,127,232,.3)}.tri-card.c7{background:rgba(240,192,64,.07);border-color:rgba(240,192,64,.3)}
+.controls{display:flex;justify-content:center;gap:9px;margin-bottom:17px;flex-wrap:wrap}
+.ctrl-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .2s}
+.ctrl-btn:hover{border-color:var(--c1);color:var(--c1)}
+/* FLASHCARDS */
+.fc-filter-bar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.fc-filter{padding:5px 12px;border-radius:99px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s}
+.fc-filter.active{border-color:var(--c1);color:var(--c1);background:rgba(91,141,238,.1)}
+.fc-controls{display:flex;gap:9px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.fc-btn{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.04em;padding:8px 17px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .18s}
+.fc-btn:hover{border-color:var(--c1);color:var(--c1)}
+.fc-btn.primary{background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff;border:none}
+.fc-counter{text-align:center;font-size:12px;color:var(--muted);margin-bottom:13px}
+.fc-scene{perspective:900px;height:295px;cursor:pointer;max-width:570px;margin:0 auto}
+.fc-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.2,.2,1);border-radius:16px}
+.fc-card.flipped{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;border:1px solid var(--border);padding:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:13px}
+.fc-front{background:linear-gradient(145deg,var(--surface),var(--surface2))}
+.fc-back{background:linear-gradient(145deg,var(--surface2),var(--surface));transform:rotateY(180deg)}
+.fc-illus{width:58px;height:58px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.fc-q{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;line-height:1.4}
+.fc-topic-badge{font-size:10px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:.08em;padding:3px 10px;border-radius:99px}
+.fc-a-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.fc-a{font-size:13px;color:var(--text);line-height:1.55;max-width:430px}
+.fc-hint{font-size:11px;color:var(--muted2);position:absolute;bottom:11px;right:15px}
+/* GLOSSARY */
+.gloss-search-wrap{position:relative;margin-bottom:16px}
+.gloss-search{width:100%;padding:10px 40px 10px 38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
+.gloss-search:focus{border-color:var(--c1)}
+.gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:8px}
+.gloss-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;transition:border-color .2s}
+.gloss-item:hover{border-color:rgba(255,255,255,.15)}
+.gloss-item.hidden{display:none}
+.gloss-key{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;margin-bottom:3px}
+.gloss-val{font-size:12px;color:var(--muted);line-height:1.4}
+/* QUIZ */
+.quiz-launch{text-align:center;padding:32px 20px}
+.quiz-launch h2{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:#fff;margin-bottom:7px}
+.quiz-launch p{color:var(--muted);margin-bottom:22px;font-size:13px}
+.quiz-modes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+.qm-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;cursor:pointer;transition:all .2s;text-align:center;min-width:135px;flex:1;max-width:185px}
+.qm-card:hover{border-color:var(--c1);background:rgba(91,141,238,.08)}
+.qm-card.selected{border-color:var(--c1);background:rgba(91,141,238,.12)}
+.qm-icon{font-size:24px;margin-bottom:6px}
+.qm-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#fff;margin-bottom:3px}
+.qm-desc{font-size:11px;color:var(--muted)}
+.quiz-start-btn{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;padding:13px 38px;border-radius:11px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff;letter-spacing:.04em;box-shadow:0 5px 22px rgba(91,141,238,.35);transition:transform .2s,box-shadow .2s}
+.quiz-start-btn:hover{transform:translateY(-2px);box-shadow:0 9px 28px rgba(91,141,238,.5)}
+.q-progress{height:5px;background:var(--border);border-radius:99px;margin-bottom:19px;overflow:hidden}
+.q-progress-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--c1),var(--c5));transition:width .4s}
+.q-opt{display:block;width:100%;text-align:left;padding:11px 15px;margin:7px 0;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .18s}
+.q-opt:hover{border-color:var(--c1);background:rgba(91,141,238,.1)}
+.q-opt.correct{border-color:#4ecba4!important;background:rgba(78,203,164,.18)!important;color:#4ecba4!important}
+.q-opt.wrong{border-color:#e05c6b!important;background:rgba(224,92,107,.18)!important;color:#e05c6b!important}
+.q-opt.show-correct{border-color:#4ecba4!important;background:rgba(78,203,164,.08)!important}
+.q-opt:disabled{cursor:default}
+.q-explain{margin-top:10px;padding:10px 13px;border-radius:9px;background:rgba(240,192,64,.08);border-left:3px solid var(--c7);font-size:12.5px;color:#c8cce0;line-height:1.5}
+.result-bar-wrap{margin:7px 0}
+.result-bar-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;color:#c8cce0}
+.result-bar-track{height:12px;background:var(--border);border-radius:99px;overflow:hidden}
+.result-bar-fill{height:100%;border-radius:99px;transition:width 1s ease}
+/* HISTORY */
+.hist-empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.hist-empty .he-icon{font-size:42px;margin-bottom:13px;opacity:.4}
+.hist-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:10px;margin-bottom:22px}
+.hist-stat{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px}
+.hist-stat .hs-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff}
+.hist-stat .hs-label{font-size:11px;color:var(--muted);margin-top:3px}
+.hist-list{display:flex;flex-direction:column;gap:9px;margin-bottom:22px}
+.hist-item{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px 15px;display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.hi-score{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;flex-shrink:0}
+.hi-info{flex:1;min-width:100px}
+.hi-date{font-size:11px;color:var(--muted);margin-bottom:2px}
+.hi-detail{font-size:13px;font-weight:500}
+.hi-bars{flex:2;min-width:175px}
+.hi-bar-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.hi-bar-label{font-size:10px;color:var(--muted);min-width:96px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.hi-bar-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden}
+.hi-bar-fill{height:100%;border-radius:99px}
+.evo-chart{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px;margin-bottom:22px}
+.evo-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:11px}
+.evo-bars{display:flex;align-items:flex-end;gap:5px;height:68px}
+.evo-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.evo-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px}
+.evo-bar-label{font-size:9px;color:var(--muted);text-align:center;white-space:nowrap}
+/* REVISION */
+.rev-topic-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:11px;overflow:hidden}
+.rev-topic-header{display:flex;align-items:center;gap:11px;padding:12px 15px;border-bottom:1px solid var(--border)}
+.rev-topic-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;flex:1}
+.rev-topic-score{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px}
+.rev-topic-body{padding:13px 15px}
+.rev-topic-summary{font-size:13px;color:#c8cce0;line-height:1.6;margin-bottom:10px}
+.rev-topic-actions{display:flex;gap:7px;flex-wrap:wrap}
+.rev-action{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:12px;cursor:pointer;transition:all .18s}
+.rev-action:hover{border-color:var(--c1);color:var(--c1)}
+.rev-action.primary{background:rgba(91,141,238,.15);color:var(--c1);border-color:rgba(91,141,238,.3)}
+/* CALCULATOR */
+.calc-wrapper{max-width:680px}
+.calc-selector{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}
+.calc-btn-sel{padding:6px 14px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;transition:all .18s}
+.calc-btn-sel:hover{border-color:var(--c2);color:var(--c2)}
+.calc-btn-sel.active{border-color:var(--c2);color:var(--c2);background:rgba(78,203,164,.1)}
+.calc-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:18px}
+.calc-indicator-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;margin-bottom:4px}
+.calc-formula-box{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:11px 15px;margin:12px 0;font-size:13.5px;color:var(--c2);letter-spacing:.03em;font-style:italic}
+.calc-desc{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.calc-vars{margin-bottom:14px}
+.calc-var-row{display:flex;align-items:center;gap:11px;margin-bottom:9px;flex-wrap:wrap}
+.calc-var-label{font-size:13px;color:var(--text);min-width:175px;flex-shrink:0}
+.calc-input{flex:1;min-width:100px;padding:9px 13px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.calc-input:focus{border-color:var(--c2)}
+.calc-calculate-btn{width:100%;padding:12px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--c2),#27a87e);color:#081a12;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:.04em;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(78,203,164,.25)}
+.calc-calculate-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(78,203,164,.35)}
+.calc-result-panel{margin-top:16px;background:rgba(78,203,164,.06);border:1px solid rgba(78,203,164,.25);border-radius:13px;padding:16px 18px;display:none}
+.calc-result-panel.show{display:block}
+.calc-result-value{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--c2);margin-bottom:3px}
+.calc-result-label{font-size:11px;color:var(--muted);margin-bottom:13px;letter-spacing:.04em;text-transform:uppercase}
+.calc-interpretation{background:rgba(255,255,255,.03);border-radius:9px;padding:13px 15px;border-left:3px solid var(--c2)}
+.calc-interp-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c2);margin-bottom:9px}
+.calc-interp-item{font-size:13px;color:#c8cce0;line-height:1.6;margin-bottom:7px;display:flex;gap:8px}
+.calc-interp-item::before{content:'•';color:var(--c2);flex-shrink:0;margin-top:1px}
+.calc-interp-item:last-child{margin-bottom:0}
+/* MISC */
+.page-footer{text-align:center;margin-top:48px;font-size:10px;color:var(--muted);opacity:.4;letter-spacing:.06em;text-transform:uppercase}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .35s ease both}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     HUB HOME SCREEN
+══════════════════════════════════════════════════ -->
+<div id="hub-screen">
+  <div class="hub-header">
+    <div class="hub-badge">🎓 Central de Estudos</div>
+    <div class="hub-title">Hub de <span>Matérias</span></div>
+    <div class="hub-sub">Estudo de Administração — PUCPR</div>
+    <div class="hub-author">by Gabriel Badaró</div>
+    <div class="hub-divider"></div>
+  </div>
+
+  <div class="hub-content">
+    <div class="hub-stats" id="hub-stats-bar">
+      <div class="hub-stat"><div class="hsv" id="hs-materias">2</div><div class="hsl">Matérias</div></div>
+      <div class="hub-stat-sep"></div>
+      <div class="hub-stat"><div class="hsv" id="hs-simulados">0</div><div class="hsl">Simulados feitos</div></div>
+      <div class="hub-stat-sep"></div>
+      <div class="hub-stat"><div class="hsv" id="hs-flashcards">0</div><div class="hsl">Flashcards vistos</div></div>
+      <div class="hub-stat-sep"></div>
+      <div class="hub-stat"><div class="hsv" id="hs-melhor">—</div><div class="hsl">Melhor nota</div></div>
+    </div>
+
+    <div class="hub-section-label">Matérias disponíveis</div>
+
+    <div class="subjects-grid">
+      <!-- Gestão de Projetos -->
+      <div class="subject-card" style="--card-line:rgba(91,141,238,.6);--card-color:var(--c1)" onclick="openSubject('gp')">
+        <div class="sc-top">
+          <div class="sc-icon" style="--icon-bg:rgba(91,141,238,.12)">🗂️</div>
+          <span class="sc-status active">● Disponível</span>
+        </div>
+        <div class="sc-title">Gestão de Projetos</div>
+        <div class="sc-desc">Mapa mental completo com PMBOK 6ª ed., simulado de 30 questões, 42 flashcards, glossário e revisão de erros.</div>
+        <div class="sc-tags">
+          <span class="sc-tag accent" style="--tag-bg:rgba(91,141,238,.12);--tag-color:var(--c1);--tag-border:rgba(91,141,238,.25)">PMBOK</span>
+          <span class="sc-tag accent" style="--tag-bg:rgba(91,141,238,.12);--tag-color:var(--c1);--tag-border:rgba(91,141,238,.25)">PMI</span>
+          <span class="sc-tag">30 questões</span>
+          <span class="sc-tag">42 flashcards</span>
+          <span class="sc-tag">9 tópicos</span>
+        </div>
+        <div class="sc-arrow">Entrar na matéria →</div>
+      </div>
+
+      <!-- Mercado de Capitais -->
+      <div class="subject-card" style="--card-line:rgba(78,203,164,.6);--card-color:var(--c2)" onclick="openSubject('mc')">
+        <div class="sc-top">
+          <div class="sc-icon" style="--icon-bg:rgba(78,203,164,.12)">📈</div>
+          <span class="sc-status active">● Disponível</span>
+        </div>
+        <div class="sc-title">Mercado de Capitais</div>
+        <div class="sc-desc">SFN, riscos, fundos, títulos, análise fundamentalista e calculadora de indicadores financeiros com interpretação automática.</div>
+        <div class="sc-tags">
+          <span class="sc-tag accent" style="--tag-bg:rgba(78,203,164,.12);--tag-color:var(--c2);--tag-border:rgba(78,203,164,.25)">SFN</span>
+          <span class="sc-tag accent" style="--tag-bg:rgba(78,203,164,.12);--tag-color:var(--c2);--tag-border:rgba(78,203,164,.25)">Indicadores</span>
+          <span class="sc-tag">Calculadora</span>
+          <span class="sc-tag">11 tópicos</span>
+        </div>
+        <div class="sc-arrow">Entrar na matéria →</div>
+      </div>
+
+      <!-- Futuras matérias -->
+      <div class="subject-card future">
+        <div class="sc-top">
+          <div class="sc-icon" style="--icon-bg:rgba(255,255,255,.05)">➕</div>
+          <span class="sc-status soon">Em breve</span>
+        </div>
+        <div class="sc-title" style="color:var(--muted)">Nova Matéria</div>
+        <div class="sc-desc">Espaço reservado para a próxima disciplina. O hub foi pensado para crescer junto com o semestre.</div>
+        <div class="sc-tags"><span class="sc-tag">Administração PUCPR</span></div>
+      </div>
+    </div>
+
+    <div class="hub-section-label">Sobre este hub</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 22px;display:flex;gap:16px;align-items:flex-start">
+      <span style="font-size:20px;flex-shrink:0;margin-top:2px">💡</span>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--c1);margin-bottom:6px">Como usar o Hub</div>
+        <div style="font-size:13px;color:#c8cce0;line-height:1.65">Selecione uma matéria acima para acessar o ambiente completo de estudo. Em cada disciplina você encontra <strong>Mapa Mental</strong>, <strong>Flashcards</strong>, <strong>Glossário</strong>, <strong>Simulado</strong>, <strong>Histórico</strong> e <strong>Revisão de Erros</strong>. Em Mercado de Capitais há também a <strong>Calculadora de Indicadores</strong> com interpretação automática. O progresso de cada matéria é salvo automaticamente.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hub-footer">PUCPR · Graduação em Administração · 2026 · Hub de Matérias by Gabriel Badaró</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SUBJECT APP (shared layout)
+══════════════════════════════════════════════════ -->
+<button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<div id="subject-app">
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div id="sb-header">
+      <button id="sb-back" onclick="goHub()" title="Voltar ao Hub">←</button>
+      <div id="sb-subject-info">
+        <div class="sb-name" id="sb-name">Matéria</div>
+        <div class="sb-course">Administração · PUCPR</div>
+      </div>
+    </div>
+    <nav id="sb-nav">
+      <div class="snav-group">
+        <div class="snav-label">Principal</div>
+        <div class="snav-item active" onclick="showPage('dashboard')" id="nav-dashboard"><div class="s-icon">🏠</div><span class="s-label">Dashboard</span></div>
+      </div>
+      <div class="snav-group">
+        <div class="snav-label">Conteúdo</div>
+        <div class="snav-item" onclick="showPage('mapa')" id="nav-mapa"><div class="s-icon">🗺️</div><span class="s-label">Mapa Mental</span></div>
+        <div class="snav-item" onclick="showPage('flashcards')" id="nav-flashcards"><div class="s-icon">🃏</div><span class="s-label">Flashcards</span><span class="s-badge" id="fc-badge">—</span></div>
+        <div class="snav-item" onclick="showPage('glossario')" id="nav-glossario"><div class="s-icon">📖</div><span class="s-label">Glossário</span></div>
+        <div class="snav-item" id="nav-calculadora" style="display:none" onclick="showPage('calculadora')"><div class="s-icon">🧮</div><span class="s-label">Calculadora</span><span class="s-badge mc-badge" style="background:rgba(78,203,164,.2);color:var(--c2)">MC</span></div>
+      </div>
+      <div class="snav-group">
+        <div class="snav-label">Prática</div>
+        <div class="snav-item" onclick="showPage('simulado')" id="nav-simulado"><div class="s-icon">🧠</div><span class="s-label">Simulado</span></div>
+        <div class="snav-item" onclick="showPage('historico')" id="nav-historico"><div class="s-icon">📊</div><span class="s-label">Histórico</span></div>
+        <div class="snav-item" onclick="showPage('revisao')" id="nav-revisao"><div class="s-icon">🔁</div><span class="s-label">Revisar Erros</span></div>
+      </div>
+    </nav>
+    <div id="sb-progress">
+      <div class="sp-title">Progresso</div>
+      <div class="sp-stat"><span class="sp-stat-label">Simulados</span><span class="sp-stat-val" id="sp-simulados">0</span></div>
+      <div class="sp-stat"><span class="sp-stat-label">Melhor nota</span><span class="sp-stat-val" id="sp-best">—</span></div>
+      <div class="sp-stat"><span class="sp-stat-label">Flashcards vistos</span><span class="sp-stat-val" id="sp-fc">0</span></div>
+      <div style="margin-top:9px">
+        <div class="sp-row"><span class="sp-label">Tópicos explorados</span><span class="sp-val" id="sp-topics-val">0%</span></div>
+        <div class="sp-bar"><div class="sp-fill" id="sp-topics-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main-content">
+  <div id="main-inner">
+
+    <!-- SEARCH -->
+    <div id="search-wrap">
+      <span id="search-icon">🔍</span>
+      <input id="search-input" type="text" placeholder="Pesquisar termos, siglas, conceitos..." oninput="handleSearch(this.value)" onfocus="showSR()" onblur="setTimeout(hideSR,200)">
+      <button id="search-clear" onclick="clearSearch()">✕</button>
+      <div id="search-results"></div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page-view active">
+      <div class="page-header"><h1 id="dash-title">Matéria</h1><p class="sub" id="dash-sub">—</p><div class="divider"></div></div>
+      <div class="stats-row"><div class="stat-card"><div class="st-val" id="ds-sim">0</div><div class="st-label">Simulados</div></div><div class="stat-card"><div class="st-val" id="ds-best">—</div><div class="st-label">Melhor Nota</div></div><div class="stat-card"><div class="st-val" id="ds-avg">—</div><div class="st-label">Média</div></div><div class="stat-card"><div class="st-val" id="ds-fc">0</div><div class="st-label">Flashcards</div></div></div>
+      <div class="dash-grid" id="dash-cards"></div>
+      <div id="dash-tip" style="background:rgba(91,141,238,.08);border:1px solid rgba(91,141,238,.2);border-radius:13px;padding:16px 18px;display:flex;gap:13px;align-items:flex-start"><span style="font-size:20px;flex-shrink:0">💡</span><div><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--c1);margin-bottom:4px">Dica de estudo</div><div id="dash-tip-text" style="font-size:13px;color:#c8cce0;line-height:1.6"></div></div></div>
+    </div>
+
+    <!-- MAPA MENTAL -->
+    <div id="page-mapa" class="page-view">
+      <div class="page-header"><h1 id="mapa-title">Mapa Mental</h1><p class="sub" id="mapa-sub">—</p><div class="divider"></div></div>
+      <div class="controls"><button class="ctrl-btn" onclick="toggleAll(true)">▼ Expandir Tudo</button><button class="ctrl-btn" onclick="toggleAll(false)">▲ Recolher Tudo</button></div>
+      <div class="mind-map" id="mind-map-container"></div>
+      <div style="text-align:center;margin-top:40px"><button onclick="showPage('simulado')" style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;padding:14px 40px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff;letter-spacing:.04em;transition:transform .2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">🧠 INICIAR SIMULADO</button></div>
+    </div>
+
+    <!-- FLASHCARDS -->
+    <div id="page-flashcards" class="page-view">
+      <div class="page-header"><h1>Flashcards</h1><p class="sub">Clique no card para revelar a resposta</p><div class="divider"></div></div>
+      <div class="fc-filter-bar" id="fc-filters"></div>
+      <div class="fc-counter" id="fc-counter"></div>
+      <div class="fc-scene" id="fc-scene" onclick="flipCard()">
+        <div class="fc-card" id="fc-card">
+          <div class="fc-face fc-front"><div class="fc-illus" id="fc-illus-f"></div><div class="fc-topic-badge" id="fc-badge-front"></div><div class="fc-q" id="fc-question"></div><div class="fc-hint">Clique para revelar ▾</div></div>
+          <div class="fc-face fc-back"><div class="fc-a-label">✦ RESPOSTA</div><div class="fc-a" id="fc-answer"></div></div>
+        </div>
+      </div>
+      <div class="fc-controls"><button class="fc-btn" onclick="prevCard()">← Anterior</button><button class="fc-btn primary" onclick="flipCard()">Virar</button><button class="fc-btn" onclick="nextCard()">Próximo →</button><button class="fc-btn" onclick="shuffleCards()">🔀 Embaralhar</button></div>
+    </div>
+
+    <!-- GLOSSÁRIO -->
+    <div id="page-glossario" class="page-view">
+      <div class="page-header"><h1>Glossário</h1><p class="sub" id="gloss-sub">—</p><div class="divider"></div></div>
+      <div class="gloss-search-wrap"><span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.4;font-size:14px;pointer-events:none">🔍</span><input class="gloss-search" type="text" placeholder="Filtrar siglas e termos..." oninput="filterGlossary(this.value)"></div>
+      <div class="gloss-grid" id="gloss-grid"></div>
+    </div>
+
+    <!-- CALCULADORA (MC only) -->
+    <div id="page-calculadora" class="page-view">
+      <div class="page-header"><h1>Calculadora de Indicadores</h1><p class="sub">Análise Fundamentalista · Calcule e interprete</p><div class="divider"></div></div>
+      <div class="calc-wrapper">
+        <div class="calc-selector" id="calc-selector"></div>
+        <div id="calc-main"></div>
+      </div>
+    </div>
+
+    <!-- SIMULADO -->
+    <div id="page-simulado" class="page-view">
+      <div class="page-header"><h1>Simulado</h1><p class="sub" id="quiz-sub">—</p><div class="divider"></div></div>
+      <div id="quiz-launch" class="quiz-launch">
+        <div style="font-size:48px;margin-bottom:14px">🧠</div>
+        <h2>Escolha o modo</h2>
+        <p>Selecione quantas questões e inicie</p>
+        <div class="quiz-modes">
+          <div class="qm-card selected" onclick="selectMode(this,'all')" data-mode="all"><div class="qm-icon">📚</div><div class="qm-title">Completo</div><div class="qm-desc">Todas as questões</div></div>
+          <div class="qm-card" onclick="selectMode(this,'quick')" data-mode="quick"><div class="qm-icon">⚡</div><div class="qm-title">Rápido</div><div class="qm-desc">10 questões aleatórias</div></div>
+          <div class="qm-card" onclick="selectMode(this,'weak')" data-mode="weak"><div class="qm-icon">🎯</div><div class="qm-title">Tópicos Fracos</div><div class="qm-desc">Onde você errou mais</div></div>
+        </div>
+        <button class="quiz-start-btn" onclick="startQuiz()">▶ Iniciar Simulado</button>
+      </div>
+      <div id="quiz-active" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span id="q-counter" style="font-family:'Syne',sans-serif;font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase"></span><span id="q-topic-badge" style="font-size:11px;padding:4px 11px;border-radius:99px;font-weight:600"></span></div>
+        <div class="q-progress"><div class="q-progress-bar" id="q-bar"></div></div>
+        <p id="q-text" style="font-size:15px;font-weight:600;margin-bottom:18px;line-height:1.5;color:#fff"></p>
+        <div id="q-opts"></div>
+        <div id="q-feedback"></div>
+      </div>
+      <div id="quiz-results" style="display:none"></div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div id="page-historico" class="page-view">
+      <div class="page-header"><h1>Histórico de Resultados</h1><p class="sub">Acompanhe sua evolução</p><div class="divider"></div></div>
+      <div id="hist-content"></div>
+    </div>
+
+    <!-- REVISAR ERROS -->
+    <div id="page-revisao" class="page-view">
+      <div class="page-header"><h1>Revisar Erros</h1><p class="sub">Tópicos que precisam de mais atenção</p><div class="divider"></div></div>
+      <div id="rev-content"></div>
+    </div>
+
+  </div>
+  </main>
+</div><!-- end subject-app -->
+
+<!-- GP MIND MAP TEMPLATE (hidden, injected by JS) -->
+<div id="gp-map-template" style="display:none">
+<div class="section-card c6 open" id="sec-projeto" data-topic="O que é um Projeto">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">01</span><div class="section-icon c6">📦</div><span class="section-title c6">O QUE É UM PROJETO</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c6"><div class="branch-title">Definição (PMBOK)</div><ul><li><strong>Esforço temporário</strong> para criar produto, serviço ou resultado <strong>exclusivo</strong></li><li>Possui <strong>início e fim</strong> definidos — não é permanente</li><li>Gera algo <strong>único</strong></li></ul></div>
+    <div class="branch c6"><div class="branch-title">Características</div><ul><li>Estrutura administrativa própria</li><li>Tarefas <strong>interdependentes</strong></li><li>Prazo específico · objetivo claro · patrocinador</li><li>Grau de incerteza</li></ul></div>
+    <div class="branch c6"><div class="branch-title">Projeto vs. Rotina</div><ul><li>Gerir estoque diariamente → <strong>Rotina</strong></li><li>Implantar novo sistema de estoque → <strong>Projeto</strong></li><li>Operar aeroporto → <strong>Rotina</strong></li><li>Construir aeroporto → <strong>Projeto</strong></li></ul></div>
+    <div class="alert-box c6"><span class="icon">⚠️</span><span><strong>Pegadinha:</strong> Confundir operação contínua com esforço temporário. Projeto = temporário + único.</span></div>
+  </div>
+</div>
+<div class="section-card c7 open" id="sec-gestao" data-topic="O que é Gestão de Projetos">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">02</span><div class="section-icon c7">🧭</div><span class="section-title c7">O QUE É GESTÃO DE PROJETOS</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c7"><div class="branch-title">Definição</div><ul><li>Aplicação de <strong>habilidades, ferramentas e técnicas</strong> às atividades do projeto</li><li>Objetivo: atender os <strong>requisitos</strong> · Referência: <strong>PMBOK (PMI)</strong></li></ul></div>
+    <div class="branch c7"><div class="branch-title">Por que usar?</div><ul><li>Melhorar <strong>comunicação</strong> · Controlar <strong>escopo</strong></li><li>Acompanhar <strong>marcos</strong> · Mitigar <strong>riscos</strong></li><li>Medir <strong>performance</strong> · Alinhar ao <strong>planejamento estratégico</strong></li></ul></div>
+    <div class="branch c7"><div class="branch-title">Finalidade</div><ul><li>Transformar ideia em <strong>resultado concreto</strong></li><li>Controle sobre prazo, custo, escopo e integração</li></ul></div>
+  </div>
+</div>
+<div class="section-card c1 open" id="sec-integracao" data-topic="Gerenciamento de Integração">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">03</span><div class="section-icon c1">🔗</div><span class="section-title c1">GERENCIAMENTO DE INTEGRAÇÃO</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c1"><div class="branch-title">O que é</div><ul><li>Une todas as partes do projeto como <strong>sistema único</strong></li><li>Problemas geram <strong>efeitos em cascata</strong></li><li><strong>Business Case</strong> → justifica o projeto</li><li><strong>Project Charter</strong> → formaliza e autoriza gerente</li></ul></div>
+    <div class="process-flow"><div class="process-step c1"><span class="num">1</span>Termo de Abertura</div><span class="arrow-sep">→</span><div class="process-step c1"><span class="num">2</span>Plano de Gerenciamento</div><span class="arrow-sep">→</span><div class="process-step c1"><span class="num">3</span>Orientar/Gerenciar</div><span class="arrow-sep">→</span><div class="process-step c1"><span class="num">4</span>Gerenciar Conhecimento</div><span class="arrow-sep">→</span><div class="process-step c1"><span class="num">5</span>Monitorar e Controlar</div><span class="arrow-sep">→</span><div class="process-step c1"><span class="num">6</span>Controle de Mudanças</div><span class="arrow-sep">→</span><div class="process-step c1"><span class="num">7</span>Encerrar</div></div>
+    <div class="alert-box c1"><span class="icon">🎯</span><span><strong>Prova:</strong> Qual área autoriza o projeto, consolida planos e gerencia mudanças? → <strong>Integração</strong></span></div>
+  </div>
+</div>
+<div class="section-card c2 open" id="sec-escopo" data-topic="Gerenciamento de Escopo">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">04</span><div class="section-icon c2">📐</div><span class="section-title c2">GERENCIAMENTO DE ESCOPO</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c2"><div class="branch-title">O que é</div><ul><li>Define <strong>o que está e o que NÃO está</strong> no projeto</li><li><strong>EAP / WBS</strong> = decomposição hierárquica em pacotes de trabalho</li><li>Requisito ≠ Escopo ≠ EAP</li><li>Validar (aceite formal) ≠ Controlar (evitar expansão)</li></ul></div>
+    <div class="process-flow"><div class="process-step c2"><span class="num">1</span>Planejar</div><span class="arrow-sep">→</span><div class="process-step c2"><span class="num">2</span>Coletar Requisitos</div><span class="arrow-sep">→</span><div class="process-step c2"><span class="num">3</span>Definir Escopo</div><span class="arrow-sep">→</span><div class="process-step c2"><span class="num">4</span>Criar EAP</div><span class="arrow-sep">→</span><div class="process-step c2"><span class="num">5</span>Validar</div><span class="arrow-sep">→</span><div class="process-step c2"><span class="num">6</span>Controlar</div></div>
+    <div class="alert-box c2"><span class="icon">🎯</span><span><strong>Prova:</strong> Confundir Requisito, Escopo e EAP é a armadilha clássica. São três coisas distintas em sequência.</span></div>
+  </div>
+</div>
+<div class="section-card c3 open" id="sec-tempo" data-topic="Gerenciamento de Tempo">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">05</span><div class="section-icon c3">⏱️</div><span class="section-title c3">GERENCIAMENTO DE TEMPO</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c3"><div class="branch-title">O que é</div><ul><li>PMBOK 6: <strong>Gerenciamento do Cronograma</strong></li><li>Ferramentas: <strong>Gantt</strong>, <strong>PERT/CPM</strong>, <strong>Caminho Crítico</strong></li></ul></div>
+    <div class="branch c3"><div class="branch-title">Por que atrasam?</div><ul><li>Planejamento insuficiente · escopo subestimado</li><li>Alteração de requisitos · mudança de prioridades</li><li>Falta de comprometimento da equipe</li></ul></div>
+    <div class="process-flow"><div class="process-step c3"><span class="num">1</span>Planejar</div><span class="arrow-sep">→</span><div class="process-step c3"><span class="num">2</span>Definir Atividades</div><span class="arrow-sep">→</span><div class="process-step c3"><span class="num">3</span>Sequenciar</div><span class="arrow-sep">→</span><div class="process-step c3"><span class="num">4</span>Estimar Durações</div><span class="arrow-sep">→</span><div class="process-step c3"><span class="num">5</span>Desenvolver Cronograma</div><span class="arrow-sep">→</span><div class="process-step c3"><span class="num">6</span>Controlar</div></div>
+    <div class="alert-box c3"><span class="icon">🎯</span><span><strong>Prova:</strong> Tempo ≠ só prazo final. Envolve dependências, estimativas e controle contínuo.</span></div>
+  </div>
+</div>
+<div class="section-card c4 open" id="sec-custos" data-topic="Gerenciamento de Custos">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">06</span><div class="section-icon c4">💰</div><span class="section-title c4">GERENCIAMENTO DE CUSTOS</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c4"><div class="branch-title">O que é</div><ul><li>Planejar, estimar, orçar, financiar, gerenciar e <strong>controlar custos</strong></li><li>Objetivo: concluir dentro do <strong>orçamento aprovado</strong></li></ul></div>
+    <div class="branch c4"><div class="branch-title">EVM — Valor Agregado</div><ul><li><strong>VP/PV</strong> = Valor Planejado (orçamento agendado)</li><li><strong>VA/EV</strong> = Valor Agregado (trabalho entregue em valor)</li><li><strong>CR/AC</strong> = Custo Real incorrido</li><li><strong>SPI</strong> = VA ÷ VP → &gt;1 adiantado · =1 prazo · &lt;1 atrasado</li></ul></div>
+    <div class="process-flow"><div class="process-step c4"><span class="num">1</span>Planejar</div><span class="arrow-sep">→</span><div class="process-step c4"><span class="num">2</span>Estimar Custos</div><span class="arrow-sep">→</span><div class="process-step c4"><span class="num">3</span>Determinar Orçamento</div><span class="arrow-sep">→</span><div class="process-step c4"><span class="num">4</span>Controlar Custos</div></div>
+    <div class="alert-box c4"><span class="icon">🎯</span><span><strong>Prova:</strong> EVM integra escopo+tempo+custo. Prova pode cobrar VP, VA e CR.</span></div>
+  </div>
+</div>
+<div class="section-card c5 open" id="sec-qualidade" data-topic="Gerenciamento da Qualidade">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">07</span><div class="section-icon c5">✅</div><span class="section-title c5">GERENCIAMENTO DA QUALIDADE</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c5"><div class="branch-title">Definição</div><ul><li>Grau em que produto atende <strong>requisitos e expectativas</strong></li><li>Prazo + orçamento ≠ qualidade garantida</li><li>Objetivo: atender às expectativas dos <strong>stakeholders</strong></li></ul></div>
+    <div class="branch c5"><div class="branch-title">Ferramentas</div><ul><li><strong>PDCA</strong>: Plan-Do-Check-Act (Shewhart/Deming)</li><li><strong>Curva ABC/Pareto</strong>: A=0-80%, B=80-95%, C=95-100%</li><li><strong>Ishikawa</strong>: 6M — Método, Mão de Obra, Material, Medida, Meio Ambiente, Máquina</li><li><strong>5 Porquês</strong> (Toyota/Ohno) · <strong>5W2H</strong> plano de ação</li></ul></div>
+    <div class="process-flow"><div class="process-step c5"><span class="num">1</span>Planejar</div><span class="arrow-sep">→</span><div class="process-step c5"><span class="num">2</span>Gerenciar</div><span class="arrow-sep">→</span><div class="process-step c5"><span class="num">3</span>Controlar</div></div>
+    <div class="alert-box c5"><span class="icon">🎯</span><span><strong>Prova:</strong> Qualidade ≠ inspeção final. São 3 processos: Planejar → Gerenciar → Controlar.</span></div>
+  </div>
+</div>
+<div class="section-card c7 open" id="sec-relacao" data-topic="Relação entre Áreas">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">08</span><div class="section-icon c7">🔺</div><span class="section-title c7">RELAÇÃO ENTRE ÁREAS</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="triangle-grid">
+      <div class="tri-card c1"><div class="tri-icon">🔗</div><div class="tri-label" style="color:var(--c1)">INTEGRAÇÃO</div><div class="tri-desc">Coordena todas</div></div>
+      <div class="tri-card c2"><div class="tri-icon">📐</div><div class="tri-label" style="color:var(--c2)">ESCOPO</div><div class="tri-desc">Define o que será entregue</div></div>
+      <div class="tri-card c3"><div class="tri-icon">⏱️</div><div class="tri-label" style="color:var(--c3)">TEMPO</div><div class="tri-desc">Quando ocorrerá</div></div>
+      <div class="tri-card c4"><div class="tri-icon">💰</div><div class="tri-label" style="color:var(--c4)">CUSTO</div><div class="tri-desc">Quanto gastar</div></div>
+      <div class="tri-card c5"><div class="tri-icon">✅</div><div class="tri-label" style="color:var(--c5)">QUALIDADE</div><div class="tri-desc">Atende requisitos</div></div>
+    </div>
+    <div class="branch c7" style="flex:1 1 100%"><div class="branch-title">Triângulo das Restrições</div><ul><li>Ampliar escopo → impacta <strong>prazo e custo</strong></li><li>Reduzir orçamento → rever prazo, escopo ou qualidade</li><li>Encurtar prazo → custos maiores ou queda de qualidade</li></ul></div>
+  </div>
+</div>
+<div class="section-card c6 open" id="sec-glossario-map" data-topic="Glossário de Siglas">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">09</span><div class="section-icon c6">📖</div><span class="section-title c6">GLOSSÁRIO DE SIGLAS</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="sigla-grid">
+      <div class="sigla-item"><div class="sigla-key" style="color:var(--c6)">PMBOK</div><div class="sigla-val">Project Management Body of Knowledge</div></div>
+      <div class="sigla-item"><div class="sigla-key" style="color:var(--c6)">PMI</div><div class="sigla-val">Project Management Institute</div></div>
+      <div class="sigla-item"><div class="sigla-key" style="color:var(--c2)">EAP / WBS</div><div class="sigla-val">Estrutura Analítica do Projeto</div></div>
+      <div class="sigla-item"><div class="sigla-key" style="color:var(--c4)">EVM</div><div class="sigla-val">Earned Value Management</div></div>
+      <div class="sigla-item"><div class="sigla-key" style="color:var(--c4)">VP/VA/CR</div><div class="sigla-val">Valor Planejado / Agregado / Custo Real</div></div>
+      <div class="sigla-item"><div class="sigla-key" style="color:var(--c4)">SPI</div><div class="sigla-val">Índice de Desempenho de Prazo = VA ÷ VP</div></div>
+      <div class="sigla-item"><div class="sigla-key" style="color:var(--c5)">PDCA</div><div class="sigla-val">Plan-Do-Check-Act — melhoria contínua</div></div>
+      <div class="sigla-item"><div class="sigla-key" style="color:var(--c7)">ROI</div><div class="sigla-val">Return on Investment</div></div>
+      <div class="sigla-item"><div class="sigla-key" style="color:var(--c3)">PERT/CPM</div><div class="sigla-val">Rede de cronograma / caminho crítico</div></div>
+      <div class="sigla-item"><div class="sigla-key" style="color:var(--c1)">Project Charter</div><div class="sigla-val">Termo de Abertura — autoriza o projeto</div></div>
+    </div>
+  </div>
+</div>
+</div><!-- end gp-map-template -->
+
+<!-- MC MIND MAP TEMPLATE (hidden, injected by JS) -->
+<div id="mc-map-template" style="display:none">
+<div class="section-card c1 open" id="mc-sec-sfn" data-topic="Sistema Financeiro Nacional">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">01</span><div class="section-icon c1">🏛️</div><span class="section-title c1">SISTEMA FINANCEIRO NACIONAL (SFN)</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c1"><div class="branch-title">O que é</div><ul><li>Conjunto de instituições e instrumentos que viabiliza a <strong>transferência de recursos</strong> de agentes superavitários para deficitários</li><li>Conecta <strong>poupadores e investidores</strong> a empresas, famílias e governo</li></ul></div>
+    <div class="branch c1"><div class="branch-title">Subsistema Normativo</div><ul><li><strong>CMN</strong> — Conselho Monetário Nacional: órgão máximo, formula política monetária e de crédito</li><li><strong>BACEN</strong> — Banco Central: executa políticas do CMN, fiscaliza SFN, emite moeda, banco dos bancos</li><li><strong>CVM</strong> — Comissão de Valores Mobiliários: regula mercado de ações, debêntures, commercial papers</li></ul></div>
+    <div class="branch c1"><div class="branch-title">Instituições Especiais</div><ul><li><strong>Banco do Brasil</strong> — agente financeiro do governo federal</li><li><strong>BNDES</strong> — financiamento de médio e longo prazo para políticas federais</li><li><strong>Caixa Econômica Federal</strong> — habitação, FGTS, loterias, operações sociais</li><li><strong>Secretaria do Tesouro Nacional</strong> — finanças públicas, emissão de títulos da dívida</li></ul></div>
+    <div class="branch c1"><div class="branch-title">Subsistema de Intermediação</div><ul><li>Instituições financeiras bancárias e não bancárias</li><li>Sistema Brasileiro de Poupança e Empréstimo (SBPE)</li><li>Instituições auxiliares e não financeiras</li><li>Diferença: órgão normativo ≠ órgão intermediador</li></ul></div>
+    <div class="alert-box c1"><span class="icon">🎯</span><span><strong>Prova:</strong> CMN = máximo. BACEN = executor. CVM = mercado de valores mobiliários. Memorize papéis distintos.</span></div>
+  </div>
+</div>
+<div class="section-card c4 open" id="mc-sec-risco" data-topic="Noções de Risco">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">02</span><div class="section-icon c4">⚠️</div><span class="section-title c4">NOÇÕES BÁSICAS DE RISCO</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c4"><div class="branch-title">Conceito</div><ul><li>Probabilidade de perda ou <strong>divergência entre resultado esperado e realizado</strong></li><li>Risco ≠ prejuízo certo — representa <strong>incerteza e oscilação</strong></li></ul></div>
+    <div class="branch c4"><div class="branch-title">3 Riscos Centrais</div><ul><li><strong>Risco de Mercado</strong>: oscilações adversas nos preços/taxas dos ativos</li><li><strong>Risco de Crédito</strong>: descumprimento de obrigação pela contraparte — inadimplência e solvência</li><li><strong>Risco de Liquidez</strong>: dificuldade de converter ativo em caixa rapidamente sem perdas relevantes</li></ul></div>
+    <div class="branch c4"><div class="branch-title">Sistemático vs. Não Sistemático</div><ul><li><strong>Risco não sistemático</strong>: específico de empresa/ativo — pode ser <strong>reduzido por diversificação</strong></li><li><strong>Risco sistemático</strong>: ligado ao mercado como um todo — <strong>não pode ser eliminado</strong></li><li><strong>Beta</strong>: medida da sensibilidade da ação em relação ao mercado</li><li><strong>Ibovespa</strong>: referência para comportamento geral do mercado</li></ul></div>
+    <div class="branch c4"><div class="branch-title">Outros Riscos</div><ul><li>Legal · Operacional · De imagem · De conjuntura · Risco-país</li></ul></div>
+    <div class="alert-box c4"><span class="icon">🎯</span><span><strong>Prova:</strong> Diferencie os 3 riscos centrais e sistemático vs. não sistemático. Beta = risco sistemático da ação.</span></div>
+  </div>
+</div>
+<div class="section-card c3 open" id="mc-sec-retorno" data-topic="Risco x Retorno">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">03</span><div class="section-icon c3">⚖️</div><span class="section-title c3">RISCO X RETORNO E PERFIL DO INVESTIDOR</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c3"><div class="branch-title">Princípio da Dominância</div><ul><li>Maior retorno para <strong>menor risco</strong> → investimento dominante</li><li>Mesmo retorno → menor risco é superior</li><li>Mesmo risco → maior retorno é preferível</li><li>Costuma aparecer em prova por <strong>gráficos</strong></li></ul></div>
+    <div class="branch c3"><div class="branch-title">Índice Sharpe</div><ul><li>Relação entre <strong>retorno e risco</strong></li><li>Avalia o retorno <strong>ajustado ao risco</strong></li><li>Ativo não deve ser julgado apenas por render mais, mas por eficiência</li></ul></div>
+    <div class="branch c3"><div class="branch-title">Perfil do Investidor</div><ul><li><strong>Conservador</strong>: prioriza segurança, aceita menor rentabilidade</li><li><strong>Moderado</strong>: equilíbrio entre segurança e retorno</li><li><strong>Arrojado</strong>: aceita maior risco em busca de rentabilidade elevada</li></ul></div>
+  </div>
+</div>
+<div class="section-card c2 open" id="mc-sec-horizonte" data-topic="Horizonte e Diversificação">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">04</span><div class="section-icon c2">🕐</div><span class="section-title c2">HORIZONTE DE INVESTIMENTO E DIVERSIFICAÇÃO</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c2"><div class="branch-title">Horizonte</div><ul><li>Prazo que o investidor pretende manter o capital aplicado</li><li>Compatibilizar <strong>horizonte do investidor</strong> com <strong>horizonte do produto</strong></li><li>Curto prazo: priorizar liquidez · Médio/longo: aceitar menor liquidez por maior retorno</li></ul></div>
+    <div class="branch c2"><div class="branch-title">Diversificação</div><ul><li>Alocação em ativos com <strong>comportamentos diferentes</strong></li><li>Reduz principalmente o <strong>risco não sistemático</strong></li><li>Não elimina o risco total do mercado (sistemático)</li></ul></div>
+    <div class="alert-box c2"><span class="icon">🎯</span><span><strong>Prova:</strong> Diversificação NÃO elimina todo o risco — elimina apenas o risco não sistemático (específico).</span></div>
+  </div>
+</div>
+<div class="section-card c7 open" id="mc-sec-pib" data-topic="Fluxo Circular e PIB">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">05</span><div class="section-icon c7">🔄</div><span class="section-title c7">FLUXO CIRCULAR DA RIQUEZA E PIB</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c7"><div class="branch-title">Fluxo Circular</div><ul><li>Famílias ofertam fatores de produção às empresas e recebem renda</li><li>Renda → consumo → receita para empresas</li><li>Governo (tributos e gastos), setor externo e mercado financeiro também participam</li></ul></div>
+    <div class="branch c7"><div class="branch-title">Fórmula do PIB</div><ul><li><strong>PIB = C + I + G + EL</strong></li><li><strong>C</strong> = Consumo das famílias</li><li><strong>I</strong> = Investimento</li><li><strong>G</strong> = Gastos do governo</li><li><strong>EL</strong> = Exportações Líquidas (exportações − importações)</li></ul></div>
+    <div class="alert-box c7"><span class="icon">🎯</span><span><strong>Prova:</strong> Memorize a fórmula do PIB e explique cada componente. Clássico de prova objetiva.</span></div>
+  </div>
+</div>
+<div class="section-card c5 open" id="mc-sec-credito" data-topic="Mercado de Crédito">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">06</span><div class="section-icon c5">💳</div><span class="section-title c5">MERCADO DE CRÉDITO</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c5"><div class="branch-title">O que é</div><ul><li>Segmento destinado a suprir <strong>necessidades de caixa de curto e médio prazo</strong></li><li><strong>Intermediação clássica</strong>: banco capta e empresta diretamente</li><li><strong>Intermediação avançada</strong>: concilia poupadores e aplicadores, cobra comissão</li></ul></div>
+    <div class="branch c5"><div class="branch-title">Recursos</div><ul><li><strong>Recursos livres</strong>: taxas livremente estabelecidas — maioria das operações</li><li><strong>Recursos direcionados</strong>: condições definidas pelo BACEN — crédito rural, imobiliário, BNDES</li></ul></div>
+    <div class="branch c5"><div class="branch-title">Finalidades</div><ul><li><strong>Capital de giro</strong>: descasamentos do ciclo financeiro</li><li><strong>Investimento</strong>: expansão, aquisições, nova planta</li><li><strong>Consumo</strong>: veículos, cartão de crédito, consignado</li></ul></div>
+    <div class="branch c5"><div class="branch-title">5 C do Crédito</div><ul><li><strong>Caráter</strong> · <strong>Capacidade</strong> · <strong>Capital</strong> · <strong>Colateral</strong> · <strong>Condições</strong></li><li>Rating AA → H: maior provisionamento = maior risco</li></ul></div>
+    <div class="alert-box c5"><span class="icon">🎯</span><span><strong>Prova:</strong> Memorize os 5 C do crédito e a diferença entre recursos livres e direcionados.</span></div>
+  </div>
+</div>
+<div class="section-card c6 open" id="mc-sec-fundos" data-topic="Fundos de Investimento">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">07</span><div class="section-icon c6">🏦</div><span class="section-title c6">FUNDOS DE INVESTIMENTO</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c6"><div class="branch-title">Conceito</div><ul><li><strong>Condomínio</strong> de pessoas físicas e jurídicas que aplicam em carteiras diversificadas</li><li>Investidor adquire <strong>cotas</strong> — fração ideal do patrimônio</li><li><strong>Patrimônio Líquido</strong> = total de recursos + resultados acumulados</li><li><strong>Chinese Wall</strong>: segregação para evitar conflito de interesses</li></ul></div>
+    <div class="branch c6"><div class="branch-title">Funções</div><ul><li><strong>Administrador</strong>: responsável legal do fundo</li><li><strong>Gestor</strong>: decisões de investimento</li><li><strong>Distribuidor</strong>: venda/distribuição de cotas</li><li><strong>Custodiante</strong>: serviços fiduciários, controle de ativos e passivos</li></ul></div>
+    <div class="branch c6"><div class="branch-title">Tipos Principais</div><ul><li><strong>Renda Fixa</strong>: títulos públicos e privados, menor risco relativo</li><li><strong>Ações</strong>: mercado acionário, maior oscilação e retorno</li><li><strong>Multimercado</strong>: múltiplas classes, flexibilidade estratégica</li><li><strong>Imobiliário (FII)</strong>: empreendimentos e ativos imobiliários</li></ul></div>
+    <div class="alert-box c6"><span class="icon">🎯</span><span><strong>Prova:</strong> Diferencie administrador, gestor, distribuidor e custodiante. Fundos NÃO têm cobertura do FGC.</span></div>
+  </div>
+</div>
+<div class="section-card c3 open" id="mc-sec-titulos" data-topic="Títulos e Renda Fixa">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">08</span><div class="section-icon c3">📄</div><span class="section-title c3">RENDA FIXA, VARIÁVEL, DERIVATIVOS E TÍTULOS</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c3"><div class="branch-title">Renda Fixa vs. Variável</div><ul><li><strong>Renda Fixa</strong>: remuneração por taxa ou indexador definido (prefixada ou pós-fixada)</li><li><strong>Renda Variável</strong>: não é possível dimensionar previamente a remuneração (ações)</li></ul></div>
+    <div class="branch c3"><div class="branch-title">Derivativos</div><ul><li>Valor deriva de ativo subjacente, taxa ou índice</li><li><strong>Hedge</strong>: proteção contra oscilações adversas</li><li><strong>Especulação</strong>: busca de lucro com o risco</li><li><strong>Arbitragem</strong>: ganho em distorções de preço</li></ul></div>
+    <div class="branch c3"><div class="branch-title">Títulos Públicos</div><ul><li><strong>LFT</strong>: indexada à Selic</li><li><strong>LTN</strong>: prefixada</li><li><strong>NTN-B</strong>: indexada ao IPCA + juros</li><li>NTN-C, NTN-D, NTN-F: outros indexadores</li></ul></div>
+    <div class="branch c3"><div class="branch-title">Títulos Privados</div><ul><li><strong>CDB</strong>: Certificado de Depósito Bancário</li><li><strong>LCI</strong>: Letra de Crédito Imobiliário</li><li><strong>LCA</strong>: Letra de Crédito do Agronegócio</li><li><strong>Debêntures</strong>: títulos de dívida corporativa</li><li><strong>Benchmark</strong>: referencial para acompanhar desempenho</li></ul></div>
+  </div>
+</div>
+<div class="section-card c4 open" id="mc-sec-fgc" data-topic="FGC">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">09</span><div class="section-icon c4">🛡️</div><span class="section-title c4">FGC — FUNDO GARANTIDOR DE CRÉDITOS</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c4"><div class="branch-title">O que é</div><ul><li>Instituição privada que protege depositantes e investidores</li><li>Garante crédito em casos de <strong>intervenção ou liquidação extrajudicial</strong></li></ul></div>
+    <div class="branch c4"><div class="branch-title">Cobertura</div><ul><li><strong>Limite:</strong> até R$ 250.000 por CPF/CNPJ por instituição</li><li>Cobre: depósitos à vista, poupança, CDB, RDB, letras de câmbio, letras hipotecárias, LCI, LCA, algumas operações compromissadas</li><li><strong>NÃO cobre:</strong> fundos de investimento (não são depósitos bancários)</li></ul></div>
+    <div class="branch c4"><div class="branch-title">Atenção ao Risco</div><ul><li>FGC não elimina a necessidade de avaliar <strong>risco de crédito do emissor</strong></li><li>CDB com remuneração muito acima do mercado = sinal de alerta</li><li>Avaliar: Basileia, parcela D-H, ROE, qualidade da carteira de crédito</li></ul></div>
+    <div class="alert-box c4"><span class="icon">🎯</span><span><strong>Prova:</strong> Limite = R$250.000 por CPF por instituição. Fundos NÃO têm cobertura do FGC. Distinção clássica de prova.</span></div>
+  </div>
+</div>
+<div class="section-card c2 open" id="mc-sec-fundamentalista" data-topic="Análise Fundamentalista">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">10</span><div class="section-icon c2">🔍</div><span class="section-title c2">ANÁLISE FUNDAMENTALISTA</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c2"><div class="branch-title">O que é</div><ul><li>Arte de <strong>analisar e projetar resultados</strong> de uma empresa</li><li>Base: balanço, DRE, fluxo de caixa, contexto macroeconômico</li><li>Visão <strong>projetiva</strong>: preço da ação = função dos <strong>lucros projetados</strong></li><li>Valor intrínseco: patrimônio, desempenho, setor, concorrência, política de dividendos</li></ul></div>
+    <div class="branch c2"><div class="branch-title">Indicadores Principais</div><ul><li><strong>P/L</strong>: Preço ÷ Lucro por ação — prazo para retorno do investimento</li><li><strong>P/VPA</strong>: Preço ÷ Valor Patrimonial por Ação — abaixo de 1 pode indicar subvalorização</li><li><strong>ROE</strong>: Lucro Líquido ÷ PL — rentabilidade sobre o patrimônio</li><li><strong>Margem Líquida</strong>: Lucro Líquido ÷ Receita Líquida — % que sobra da receita</li><li><strong>Liquidez Corrente</strong>: Ativo Circulante ÷ Passivo Circulante — capacidade de pagar obrigações</li><li><strong>Cash-yield</strong>: Dividendos por ação ÷ Preço da ação</li><li><strong>Endividamento</strong>: Passivo Total ÷ PL — peso do capital de terceiros</li></ul></div>
+    <div class="alert-box c2"><span class="icon">🎯</span><span><strong>Prova:</strong> Nenhum indicador deve ser analisado isoladamente. P/L baixo pode ser oportunidade OU reflexo de expectativas ruins.</span></div>
+  </div>
+</div>
+<div class="section-card c8 open" id="mc-sec-gestfinanceira" data-topic="Gestão Financeira">
+  <div class="section-header" onclick="toggleCard(this)"><span class="section-number">11</span><div class="section-icon c8">⚙️</div><span class="section-title c8">GESTÃO FINANCEIRA</span><span class="toggle-btn">▾</span></div>
+  <div class="section-body">
+    <div class="branch c8"><div class="branch-title">Decisões Financeiras</div><ul><li><strong>Decisões de investimento</strong>: aplicação eficiente dos recursos em ativos permanentes e capital de giro</li><li><strong>Decisões de financiamento</strong>: escolha das fontes — capital de terceiros, próprio, lucros retidos</li></ul></div>
+    <div class="branch c8"><div class="branch-title">Dilemas</div><ul><li>Maximizar lucro vs. manter <strong>liquidez</strong></li><li>Excesso de liquidez = recursos ociosos, penalização da rentabilidade</li><li>Alta rentabilidade sem atenção ao caixa = risco financeiro</li></ul></div>
+    <div class="alert-box c8"><span class="icon">🎯</span><span><strong>Prova:</strong> Finanças corporativas = eixo integrador das decisões de toda a empresa (marketing, produção, suprimentos).</span></div>
+  </div>
+</div>
+</div><!-- end mc-map-template -->
+<script>
+/* ═══ SUBJECT DEFINITIONS ═══ */
+const SUBJECTS={
+  gp:{id:'gp',name:'Gestão de Projetos',sub:'PMBOK 6ª ed. · PMI · Integração · Escopo · Tempo · Custo · Qualidade',color:'var(--c1)',mapId:'gp-map-template',centerTitle:'🎯 GESTÃO DE PROJETOS',centerSub:'PMBOK 6ª ed. · PMI · Integração · Escopo · Tempo · Custo · Qualidade',tip:'Comece pelo Mapa Mental, depois Flashcards e finalize com o Simulado. Use Revisar Erros para focar nos pontos fracos.',hasCalc:false,
+  topicColors:{'O que é um Projeto':'#3dd4f5','O que é Gestão de Projetos':'#f0c040','Gerenciamento de Integração':'#5b8dee','Gerenciamento de Escopo':'#4ecba4','Gerenciamento de Tempo':'#f5a623','Gerenciamento de Custos':'#e05c6b','Gerenciamento da Qualidade':'#9b7fe8','Relação entre Áreas':'#f0c040','Glossário de Siglas':'#3dd4f5'},
+  sectionIds:{'O que é um Projeto':'sec-projeto','O que é Gestão de Projetos':'sec-gestao','Gerenciamento de Integração':'sec-integracao','Gerenciamento de Escopo':'sec-escopo','Gerenciamento de Tempo':'sec-tempo','Gerenciamento de Custos':'sec-custos','Gerenciamento da Qualidade':'sec-qualidade','Relação entre Áreas':'sec-relacao','Glossário de Siglas':'sec-glossario-map'},
+  topicSummaries:{'O que é um Projeto':'Projeto = esforço temporário para criar resultado exclusivo. Possui início e fim definidos. Diferente de rotina: projeto é único, rotina é repetitiva.','O que é Gestão de Projetos':'Aplicação de habilidades, ferramentas e técnicas para atender requisitos. Referência: PMBOK (PMI). Benefícios: comunicação, controle de escopo, mitigação de riscos.','Gerenciamento de Integração':'Une todas as partes do projeto. Business Case → Termo de Abertura → Plano. 7 processos. Controla mudanças de forma integrada.','Gerenciamento de Escopo':'Define o que ESTÁ e o que NÃO ESTÁ no projeto. EAP (WBS) = decomposição hierárquica. Requisito ≠ Escopo ≠ EAP.','Gerenciamento de Tempo':'Garante conclusão no prazo. Ferramentas: Gantt, PERT/CPM, Caminho Crítico. 6 processos.','Gerenciamento de Custos':'EVM integra escopo+tempo+custo. VP=planejado, VA=entregue, CR=gasto real. SPI = VA÷VP.','Gerenciamento da Qualidade':'3 processos: Planejar → Gerenciar → Controlar. Ferramentas: PDCA, Curva ABC/Pareto, Ishikawa (6M), 5 Porquês, 5W2H.'}
+  },
+  mc:{id:'mc',name:'Mercado de Capitais',sub:'SFN · Riscos · Fundos · Títulos · Análise Fundamentalista · Indicadores',color:'var(--c2)',mapId:'mc-map-template',centerTitle:'📈 MERCADO DE CAPITAIS',centerSub:'SFN · Riscos · Fundos · Títulos · Análise Fundamentalista',tip:'Comece pelo SFN e riscos, depois fundos e títulos. Finalize com Análise Fundamentalista e use a Calculadora para treinar cálculo e interpretação.',hasCalc:true,
+  topicColors:{'Sistema Financeiro Nacional':'#5b8dee','Noções de Risco':'#e05c6b','Risco x Retorno':'#f5a623','Horizonte e Diversificação':'#4ecba4','Fluxo Circular e PIB':'#f0c040','Mercado de Crédito':'#9b7fe8','Fundos de Investimento':'#3dd4f5','Títulos e Renda Fixa':'#f5a623','FGC':'#e05c6b','Análise Fundamentalista':'#4ecba4','Gestão Financeira':'#f06292'},
+  sectionIds:{'Sistema Financeiro Nacional':'mc-sec-sfn','Noções de Risco':'mc-sec-risco','Risco x Retorno':'mc-sec-retorno','Horizonte e Diversificação':'mc-sec-horizonte','Fluxo Circular e PIB':'mc-sec-pib','Mercado de Crédito':'mc-sec-credito','Fundos de Investimento':'mc-sec-fundos','Títulos e Renda Fixa':'mc-sec-titulos','FGC':'mc-sec-fgc','Análise Fundamentalista':'mc-sec-fundamentalista','Gestão Financeira':'mc-sec-gestfinanceira'},
+  topicSummaries:{'Sistema Financeiro Nacional':'CMN = órgão máximo. BACEN = executor, emissor, fiscalizador. CVM = mercado de valores mobiliários. Subsistema normativo vs. intermediação.','Noções de Risco':'Risco = incerteza. Três tipos: mercado, crédito, liquidez. Sistemático ≠ não sistemático. Beta = risco sistemático.','Risco x Retorno':'Princípio da dominância: maior retorno para menor risco. Índice Sharpe = retorno ajustado ao risco. Perfis: conservador, moderado, arrojado.','Horizonte e Diversificação':'Compatibilizar prazo do investidor com prazo do produto. Diversificação reduz risco não sistemático mas NÃO elimina o sistemático.','Fluxo Circular e PIB':'PIB = C + I + G + EL. C=consumo, I=investimento, G=gastos governo, EL=exportações líquidas.','Mercado de Crédito':'Recursos livres vs. direcionados. Finalidades: capital de giro, investimento, consumo. 5 C do crédito: caráter, capacidade, capital, colateral, condições.','Fundos de Investimento':'Condomínio de investidores. Cota = fração do PL. Administrador ≠ Gestor. Tipos: renda fixa, ações, multimercado, imobiliário. Sem cobertura FGC.','Títulos e Renda Fixa':'LFT=Selic, LTN=prefixada, NTN-B=IPCA. Privados: CDB, LCI, LCA, debêntures. Derivativos: hedge, especulação, arbitragem.','FGC':'Proteção de até R$250.000 por CPF por instituição. Cobre CDB, poupança, depósitos. NÃO cobre fundos de investimento.','Análise Fundamentalista':'Análise projetiva de empresas. P/L, P/VPA, ROE, Margem Líquida, Liquidez Corrente. Nenhum indicador analisado isoladamente.','Gestão Financeira':'Decisões de investimento vs. financiamento. Dilema rentabilidade x liquidez. Finanças = eixo integrador de toda a empresa.'}
+  }
+};
+
+/* ═══ GP FLASHCARDS ═══ */
+const GP_FC=[
+  {topic:'O que é um Projeto',illus:'📦',q:'O que é um projeto segundo o PMBOK?',a:'Esforço temporário empreendido para criar um produto, serviço ou resultado exclusivo, com início e fim definidos.'},
+  {topic:'O que é um Projeto',illus:'🔄',q:'Qual a diferença entre projeto e rotina?',a:'Projeto = temporário, único, com início e fim. Rotina = permanente, repetitiva. Ex: construir aeroporto (projeto) vs. operá-lo (rotina).'},
+  {topic:'O que é um Projeto',illus:'⚡',q:'Por que projetos têm grau de incerteza?',a:'Porque cada projeto é único — não há repetição exata. Quanto mais novo o projeto, maior a incerteza.'},
+  {topic:'O que é um Projeto',illus:'🎯',q:'Cite 3 características de um projeto',a:'1) Início e fim definidos · 2) Resultado único · 3) Tarefas interdependentes. Também: patrocinador, grau de incerteza.'},
+  {topic:'O que é Gestão de Projetos',illus:'🧭',q:'O que é gestão de projetos?',a:'Aplicação de habilidades, ferramentas e técnicas às atividades do projeto para atender seus requisitos. Referência: PMBOK (PMI).'},
+  {topic:'O que é Gestão de Projetos',illus:'📚',q:'O que é o PMBOK?',a:'Project Management Body of Knowledge — guia de boas práticas publicado pelo PMI. Principal referência da disciplina.'},
+  {topic:'O que é Gestão de Projetos',illus:'📊',q:'Por que organizações usam gestão de projetos?',a:'Melhorar comunicação, controlar escopo, acompanhar marcos, mitigar riscos, medir performance e alinhar ao planejamento estratégico.'},
+  {topic:'Gerenciamento de Integração',illus:'🔗',q:'O que é gerenciamento de integração?',a:'Área responsável por unir todas as partes do projeto. Garante funcionamento como sistema único. Problemas geram efeitos em cascata.'},
+  {topic:'Gerenciamento de Integração',illus:'📋',q:'O que é o Business Case?',a:'Documento que justifica a existência e realização do projeto. Apresenta benefícios esperados e apoia a tomada de decisão.'},
+  {topic:'Gerenciamento de Integração',illus:'✍️',q:'O que é o Termo de Abertura (Project Charter)?',a:'Formaliza a existência do projeto e concede autoridade ao gerente para usar recursos organizacionais. Nasce na Iniciação.'},
+  {topic:'Gerenciamento de Integração',illus:'🔄',q:'O que é o Controle Integrado de Mudanças?',a:'Analisa toda solicitação de mudança de forma integrada (escopo+custo+prazo) antes de aprovar ou rejeitar. Evita mudanças improvisadas.'},
+  {topic:'Gerenciamento de Escopo',illus:'📐',q:'O que é gerenciamento de escopo?',a:'Define e controla o que ESTÁ e o que NÃO ESTÁ incluído no projeto. Garante que apenas o trabalho necessário seja realizado.'},
+  {topic:'Gerenciamento de Escopo',illus:'🌳',q:'O que é a EAP (WBS)?',a:'Estrutura Analítica do Projeto — decomposição hierárquica do trabalho em pacotes de trabalho. WBS = Work Breakdown Structure.'},
+  {topic:'Gerenciamento de Escopo',illus:'⚖️',q:'Qual a diferença entre Validar e Controlar Escopo?',a:'Validar = aceite formal das entregas pelo cliente. Controlar = monitorar e impedir expansão descontrolada (scope creep).'},
+  {topic:'Gerenciamento de Tempo',illus:'⏱️',q:'Como o PMBOK 6 chama a área de Tempo?',a:'Gerenciamento do Cronograma do Projeto — inclui planejar, definir, sequenciar, estimar durações e controlar.'},
+  {topic:'Gerenciamento de Tempo',illus:'📅',q:'O que é o Caminho Crítico?',a:'Sequência mais longa de atividades que determina a duração mínima do projeto. Qualquer atraso nele atrasa todo o projeto.'},
+  {topic:'Gerenciamento de Tempo',illus:'⚠️',q:'Por que projetos atrasam? Cite 3 causas.',a:'1) Planejamento insuficiente · 2) Escopo subestimado · 3) Alteração de requisitos pelo cliente.'},
+  {topic:'Gerenciamento de Custos',illus:'💰',q:'O que envolve o gerenciamento de custos?',a:'Planejar, estimar, orçar, financiar, gerenciar e controlar os custos para concluir dentro do orçamento aprovado.'},
+  {topic:'Gerenciamento de Custos',illus:'📈',q:'O que é EVM e quais seus 3 componentes?',a:'Earned Value Management: integra escopo+cronograma+custo. VP=orçamento agendado, VA=trabalho entregue em valor, CR=custo gasto.'},
+  {topic:'Gerenciamento de Custos',illus:'🧮',q:'O que é SPI e como interpretar?',a:'SPI = VA ÷ VP. SPI > 1 = adiantado. SPI = 1 = no prazo. SPI < 1 = atrasado.'},
+  {topic:'Gerenciamento da Qualidade',illus:'✅',q:'O que é Qualidade no PMBOK?',a:'Grau em que produto, serviço ou resultado atende aos requisitos e expectativas do cliente. Deve ser planejada, não apenas inspecionada.'},
+  {topic:'Gerenciamento da Qualidade',illus:'🔄',q:'O que é PDCA?',a:'Plan-Do-Check-Act = Planejar-Fazer-Verificar-Agir. Ciclo de melhoria contínua (Shewhart/Deming).'},
+  {topic:'Gerenciamento da Qualidade',illus:'🐟',q:'O que é o Diagrama de Ishikawa?',a:'Diagrama de causa e efeito (espinha de peixe). 6 categorias: Método, Mão de Obra, Material, Medida, Meio Ambiente, Máquina (6M).'},
+  {topic:'Gerenciamento da Qualidade',illus:'📊',q:'O que é a Curva ABC (Pareto)?',a:'A = 0-80% (mais críticos), B = 80-95%, C = 95-100%. 20% das causas geram 80% dos efeitos.'},
+  {topic:'Gerenciamento da Qualidade',illus:'❓',q:'O que é a técnica dos 5 Porquês?',a:'Criada por Taiichi Ohno (Toyota). Perguntar "Por quê?" 5 vezes para identificar a causa raiz de um problema.'},
+];
+
+/* ═══ MC FLASHCARDS ═══ */
+const MC_FC=[
+  {topic:'Sistema Financeiro Nacional',illus:'🏛️',q:'O que é o SFN?',a:'Sistema Financeiro Nacional = conjunto de instituições e instrumentos que viabiliza a transferência de recursos de agentes superavitários para deficitários.'},
+  {topic:'Sistema Financeiro Nacional',illus:'⚖️',q:'Qual a diferença entre CMN, BACEN e CVM?',a:'CMN = órgão máximo, formula política. BACEN = executa políticas, fiscaliza, emite moeda. CVM = regula mercado de valores mobiliários.'},
+  {topic:'Sistema Financeiro Nacional',illus:'🏦',q:'Qual é o papel do BNDES?',a:'Instrumento de financiamento de médio e longo prazos para execução de políticas do governo federal. Banco de desenvolvimento.'},
+  {topic:'Sistema Financeiro Nacional',illus:'🔄',q:'O que é o subsistema normativo?',a:'Responsável por formular diretrizes, regular, supervisionar e fiscalizar o SFN. Composto por CMN, BACEN e CVM.'},
+  {topic:'Noções de Risco',illus:'⚠️',q:'O que é risco em investimentos?',a:'Probabilidade de perda ou divergência entre o resultado esperado e o realizado. Risco representa incerteza, não necessariamente prejuízo certo.'},
+  {topic:'Noções de Risco',illus:'💸',q:'Diferencie risco de mercado, crédito e liquidez.',a:'Mercado = oscilações nos preços. Crédito = descumprimento de obrigação pela contraparte. Liquidez = dificuldade de converter ativo em caixa sem perdas.'},
+  {topic:'Noções de Risco',illus:'📊',q:'O que é risco sistemático vs. não sistemático?',a:'Sistemático = ligado ao mercado todo, NÃO pode ser eliminado por diversificação. Não sistemático = específico de empresa, pode ser reduzido.'},
+  {topic:'Noções de Risco',illus:'📐',q:'O que é o Beta?',a:'Medida da sensibilidade de uma ação em relação ao retorno do mercado. Indica o risco sistemático da ação.'},
+  {topic:'Risco x Retorno',illus:'⚖️',q:'O que é o Princípio da Dominância?',a:'Entre alternativas comparáveis, a melhor é a que entrega maior retorno para menor risco. Investimentos dominantes eliminam os inferiores.'},
+  {topic:'Risco x Retorno',illus:'📈',q:'O que é o Índice Sharpe?',a:'Relação entre retorno e risco. Avalia o retorno ajustado ao risco. Um ativo não deve ser julgado apenas por render mais.'},
+  {topic:'Risco x Retorno',illus:'👤',q:'Quais são os 3 perfis de investidor?',a:'Conservador: prioriza segurança. Moderado: equilíbrio segurança e retorno. Arrojado: aceita maior risco em busca de rentabilidade elevada.'},
+  {topic:'Horizonte e Diversificação',illus:'🕐',q:'O que é horizonte de investimento?',a:'Prazo que o investidor pretende manter o capital aplicado. Deve ser compatibilizado com o prazo de maturação do produto financeiro.'},
+  {topic:'Horizonte e Diversificação',illus:'🌐',q:'O que é diversificação e quais seus limites?',a:'Alocação em ativos com comportamentos diferentes para reduzir risco. Reduz o risco não sistemático, MAS NÃO elimina o risco sistemático.'},
+  {topic:'Fluxo Circular e PIB',illus:'🔄',q:'Qual é a fórmula do PIB?',a:'PIB = C + I + G + EL. C = consumo das famílias. I = investimento. G = gastos do governo. EL = exportações líquidas.'},
+  {topic:'Fluxo Circular e PIB',illus:'🌍',q:'O que é o fluxo circular da riqueza?',a:'Modelo que mostra como famílias, empresas, governo, setor externo e mercado financeiro estão interconectados na economia.'},
+  {topic:'Mercado de Crédito',illus:'💳',q:'Quais são os 5 C do crédito?',a:'Caráter, Capacidade, Capital, Colateral e Condições. Estrutura para avaliar a qualidade do tomador e viabilidade da concessão.'},
+  {topic:'Mercado de Crédito',illus:'🏦',q:'Diferença entre recursos livres e direcionados?',a:'Livres: taxas estabelecidas livremente pelo mercado. Direcionados: condições definidas pelo BACEN (crédito rural, imobiliário, BNDES).'},
+  {topic:'Fundos de Investimento',illus:'🏦',q:'O que é um fundo de investimento?',a:'Condomínio de pessoas físicas e jurídicas que aplicam em carteiras diversificadas. Investidor compra cotas = fração ideal do patrimônio líquido.'},
+  {topic:'Fundos de Investimento',illus:'👥',q:'Diferença entre administrador e gestor de fundo?',a:'Administrador = responsável legal. Gestor = decisões de investimento. Distribuidor = venda das cotas. Custodiante = controle dos ativos.'},
+  {topic:'Fundos de Investimento',illus:'📊',q:'Quais os 4 tipos principais de fundos?',a:'Renda Fixa (menor risco), Ações (maior oscilação), Multimercado (diversificado), Imobiliário (empreendimentos e aluguéis).'},
+  {topic:'Títulos e Renda Fixa',illus:'📄',q:'O que diferencia renda fixa de renda variável?',a:'Renda fixa: remuneração por taxa ou indexador definido. Renda variável: não é possível dimensionar previamente a remuneração (ações).'},
+  {topic:'Títulos e Renda Fixa',illus:'🏛️',q:'Classifique LFT, LTN e NTN-B.',a:'LFT = indexada à Selic (pós-fixada). LTN = prefixada. NTN-B = indexada ao IPCA + juros (proteção inflacionária).'},
+  {topic:'Títulos e Renda Fixa',illus:'🔄',q:'O que são derivativos e suas 3 finalidades?',a:'Contratos cujo valor deriva de um ativo subjacente. Finalidades: Hedge (proteção), Especulação (ganho com risco), Arbitragem (distorções de preço).'},
+  {topic:'FGC',illus:'🛡️',q:'O que é o FGC e qual o limite?',a:'Fundo Garantidor de Créditos: protege depositantes em casos de intervenção ou liquidação. Limite: R$250.000 por CPF por instituição.'},
+  {topic:'FGC',illus:'❌',q:'O que NÃO é coberto pelo FGC?',a:'Fundos de investimento NÃO têm cobertura do FGC, pois não são depósitos bancários — são condomínios com patrimônio próprio.'},
+  {topic:'Análise Fundamentalista',illus:'🔍',q:'O que é análise fundamentalista?',a:'Arte de analisar e projetar resultados de uma empresa. Visão projetiva: preço da ação = função dos lucros projetados.'},
+  {topic:'Análise Fundamentalista',illus:'📊',q:'O que é o P/L?',a:'Preço da ação ÷ Lucro por ação. Indica o número de anos para recuperar o investimento via lucro. Analisar sempre comparativamente.'},
+  {topic:'Análise Fundamentalista',illus:'📈',q:'O que é ROE?',a:'Return on Equity = Lucro Líquido ÷ Patrimônio Líquido. Mede quanto lucro a empresa gera em relação ao capital dos acionistas.'},
+  {topic:'Análise Fundamentalista',illus:'💧',q:'O que é Liquidez Corrente?',a:'Ativo Circulante ÷ Passivo Circulante. Indica a capacidade da empresa de pagar obrigações de curto prazo. LC > 1 = fôlego financeiro.'},
+  {topic:'Análise Fundamentalista',illus:'⚠️',q:'Por que não analisar indicadores isoladamente?',a:'P/L baixo pode ser oportunidade OU reflexo de expectativas ruins. Sempre comparar com empresas do mesmo setor e histórico.'},
+  {topic:'Gestão Financeira',illus:'⚙️',q:'Quais são as duas grandes decisões financeiras?',a:'1) Decisões de investimento: aplicação eficiente dos recursos. 2) Decisões de financiamento: escolha adequada das fontes de capital.'},
+];
+
+/* ═══ GP QUESTIONS ═══ */
+const GP_Q=[
+  {topic:'O que é um Projeto',q:'Segundo o PMBOK, projeto é:',opts:['Uma atividade rotineira e permanente','Um esforço temporário para criar produto, serviço ou resultado exclusivo','Um processo contínuo de operação','Um conjunto de procedimentos repetitivos'],a:1,exp:'Projeto = esforço temporário + resultado exclusivo. Possui início e fim definidos.'},
+  {topic:'O que é um Projeto',q:'Qual representa um PROJETO e não uma rotina?',opts:['Operar terminal aeroportuário diariamente','Administrar estoque diariamente','Construir um novo aeroporto','Atender clientes no balcão'],a:2,exp:'Construir um aeroporto é temporário e gera resultado único. Operar e atender são rotinas.'},
+  {topic:'O que é um Projeto',q:'Qual NÃO é característica de projeto?',opts:['Possui início e fim definidos','Gera algo único','É atividade permanente e repetitiva','Possui patrocinador'],a:2,exp:'Projetos são temporários e únicos. Atividades permanentes são operações.'},
+  {topic:'O que é Gestão de Projetos',q:'A gestão de projetos é definida como:',opts:['Criação de cronogramas para atividades repetitivas','Aplicação de habilidades, ferramentas e técnicas para atender requisitos do projeto','O controle financeiro de operações da empresa','Supervisão de processos de RH'],a:1,exp:'Definição oficial: aplicação de habilidades + ferramentas + técnicas para atender requisitos.'},
+  {topic:'O que é Gestão de Projetos',q:'A principal referência teórica da disciplina é:',opts:['ISO 9001','PMBOK (PMI)','Scrum Guide','ITIL'],a:1,exp:'PMBOK = Project Management Body of Knowledge, publicado pelo PMI.'},
+  {topic:'O que é Gestão de Projetos',q:'Qual NÃO é benefício da gestão de projetos?',opts:['Melhorar a comunicação','Acompanhar marcos e projetar recursos','Garantir promoção de funcionários','Mitigar riscos e medir performance'],a:2,exp:'Promoção de funcionários não é benefício da gestão de projetos.'},
+  {topic:'Gerenciamento de Integração',q:'O gerenciamento de integração é responsável por:',opts:['Definir apenas o escopo','Unir e coordenar todas as partes como sistema único','Controlar apenas custos','Gerenciar exclusivamente RH'],a:1,exp:'Integração coordena tudo: unificação, consolidação, comunicação e inter-relacionamentos.'},
+  {topic:'Gerenciamento de Integração',q:'O Termo de Abertura (Project Charter):',opts:['É criado após o encerramento','Formaliza o projeto e concede autoridade ao gerente','É documento de controle de qualidade','Define apenas o orçamento'],a:1,exp:'O Termo de Abertura nasce na Iniciação e autoriza o gerente para usar recursos.'},
+  {topic:'Gerenciamento de Integração',q:'O Business Case é:',opts:['O cronograma do projeto','Documento que justifica a existência do projeto','O plano de gerenciamento','A EAP do projeto'],a:1,exp:'Business Case justifica a realização do projeto e apoia a decisão organizacional.'},
+  {topic:'Gerenciamento de Escopo',q:'O gerenciamento de escopo trata de:',opts:['Controlar apenas o orçamento','Definir e controlar o que está e o que NÃO está incluído no projeto','Gerenciar o cronograma','Controlar a qualidade'],a:1,exp:'Escopo = o que será entregue E o que não será.'},
+  {topic:'Gerenciamento de Escopo',q:'EAP significa:',opts:['Estrutura de Análise de Processos','Estrutura Analítica do Projeto','Estratégia de Ação Planejada','Escopo de Atividades do Projeto'],a:1,exp:'EAP = Estrutura Analítica do Projeto (inglês: WBS = Work Breakdown Structure).'},
+  {topic:'Gerenciamento de Escopo',q:'Validar Escopo significa:',opts:['Controlar mudanças no escopo','Aceite formal das entregas pelo cliente','Criar a EAP','Coletar requisitos'],a:1,exp:'Validar = cliente aceita formalmente. Controlar = evitar expansão descontrolada.'},
+  {topic:'Gerenciamento de Tempo',q:'No PMBOK 6, Gerenciamento de Tempo é chamado de:',opts:['Gerenciamento de Prazos','Gerenciamento do Cronograma do Projeto','Gerenciamento das Atividades','Gerenciamento de Marcos'],a:1,exp:'PMBOK 6 renomeou para Gerenciamento do Cronograma do Projeto.'},
+  {topic:'Gerenciamento de Tempo',q:'O Gráfico de Gantt é:',opts:['Rede de atividades PERT/CPM','Representação visual de tarefas ao longo do tempo com duração e dependências','Método de estimativa de custos','Diagrama de causa e efeito'],a:1,exp:'Gantt = representação visual de tarefas no tempo, com duração, dependências e marcos.'},
+  {topic:'Gerenciamento de Tempo',q:'O caminho crítico representa:',opts:['O caminho mais curto','A sequência mais longa que determina a duração mínima','As atividades com menor custo','As atividades que podem ser atrasadas'],a:1,exp:'Caminho crítico = sequência mais longa → determina a duração mínima.'},
+  {topic:'Gerenciamento de Custos',q:'Na EVM, VA (Valor Agregado) representa:',opts:['O custo total planejado','O custo efetivamente incorrido','O trabalho executado em termos do orçamento autorizado','O orçamento autorizado para o trabalho agendado'],a:2,exp:'VA/EV = trabalho entregue medido em valor orçado.'},
+  {topic:'Gerenciamento de Custos',q:'Se o SPI = 0,8, o projeto está:',opts:['Adiantado','No prazo','Atrasado','Com custos acima do previsto'],a:2,exp:'SPI = VA ÷ VP. Se < 1 → atrasado. Se = 1 → no prazo. Se > 1 → adiantado.'},
+  {topic:'Gerenciamento de Custos',q:'No triângulo das restrições, ampliar o escopo:',opts:['Apenas impacta custo','Apenas impacta prazo','Normalmente impacta prazo e custo','Não tem impacto'],a:2,exp:'As três restrições se influenciam mutuamente.'},
+  {topic:'Gerenciamento da Qualidade',q:'O PDCA significa:',opts:['Plan, Deploy, Control, Assess','Plan, Do, Check, Act','Project, Define, Control, Audit','Process, Document, Check, Apply'],a:1,exp:'PDCA = Plan (Planejar), Do (Fazer), Check (Verificar), Act (Agir).'},
+  {topic:'Gerenciamento da Qualidade',q:'O Diagrama de Ishikawa é conhecido como:',opts:['Diagrama de Gantt','Diagrama de causa e efeito (espinha de peixe)','Curva ABC','Diagrama PERT'],a:1,exp:'Ishikawa = diagrama de causa e efeito = espinha de peixe.'},
+  {topic:'Gerenciamento da Qualidade',q:'Na Curva ABC (Pareto), os itens "A" representam:',opts:['Itens de 95% a 100%','Itens de 80% a 95%','Itens de 0% a 80%','Itens com menor valor'],a:2,exp:'A = 0 a 80% (mais importantes), B = 80-95%, C = 95-100%.'},
+];
+
+/* ═══ MC QUESTIONS ═══ */
+const MC_Q=[
+  {topic:'Sistema Financeiro Nacional',q:'O órgão máximo do SFN é:',opts:['BACEN','CMN','CVM','BNDES'],a:1,exp:'CMN (Conselho Monetário Nacional) é o órgão máximo do SFN.'},
+  {topic:'Sistema Financeiro Nacional',q:'A CVM regula:',opts:['Política monetária','Habitação e FGTS','Mercado de valores mobiliários (ações, debêntures)','Financiamentos de longo prazo'],a:2,exp:'CVM = Comissão de Valores Mobiliários, regula o mercado de valores mobiliários.'},
+  {topic:'Sistema Financeiro Nacional',q:'O BACEN tem como função:',opts:['Formular diretrizes do SFN','Executar políticas do CMN, fiscalizar e emitir moeda','Regular o mercado de ações','Financiar médio e longo prazo'],a:1,exp:'BACEN executa as políticas do CMN, fiscaliza o SFN, protege o poder de compra e emite moeda.'},
+  {topic:'Sistema Financeiro Nacional',q:'O subsistema normativo é responsável por:',opts:['Operacionalizar serviços financeiros','Formular diretrizes, regular, supervisionar e fiscalizar','Administrar fundos de investimento','Distribuir títulos públicos'],a:1,exp:'Subsistema normativo = formula diretrizes e fiscaliza. Subsistema de intermediação = operacionaliza.'},
+  {topic:'Noções de Risco',q:'Risco de crédito decorre de:',opts:['Oscilações nos preços dos ativos','Descumprimento de obrigação pela contraparte','Dificuldade de converter ativo em caixa','Variação das taxas de câmbio'],a:1,exp:'Risco de crédito = inadimplência, solvência do devedor.'},
+  {topic:'Noções de Risco',q:'O risco NÃO sistemático:',opts:['É ligado ao mercado como um todo','Não pode ser eliminado por diversificação','É específico de empresa e pode ser reduzido por diversificação','É medido pelo Ibovespa'],a:2,exp:'Risco não sistemático é específico de empresa e pode ser reduzido por diversificação.'},
+  {topic:'Noções de Risco',q:'O Beta mede:',opts:['A rentabilidade de um fundo','O risco de liquidez','A sensibilidade da ação em relação ao retorno do mercado','O grau de endividamento'],a:2,exp:'Beta = medida do risco sistemático, sensibilidade da ação em relação ao mercado.'},
+  {topic:'Risco x Retorno',q:'Segundo o Princípio da Dominância:',opts:['A de maior retorno sempre é superior','A de menor risco sempre é inferior','A que entrega maior retorno para menor risco é dominante','A mais líquida é sempre preferível'],a:2,exp:'Dominância: maior retorno para menor risco. Se mesmo retorno → menor risco é superior.'},
+  {topic:'Risco x Retorno',q:'O Índice Sharpe avalia:',opts:['O valor patrimonial de uma ação','O retorno ajustado ao risco','A liquidez diária do fundo','O nível de endividamento'],a:1,exp:'Sharpe = relação retorno/risco. Avalia eficiência, não apenas magnitude do retorno.'},
+  {topic:'Fluxo Circular e PIB',q:'Na fórmula PIB = C + I + G + EL, "EL" representa:',opts:['Empréstimos ao exterior','Exportações líquidas (exportações - importações)','Emissão de letras do tesouro','Eixo de liquidez'],a:1,exp:'EL = Exportações Líquidas = exportações menos importações.'},
+  {topic:'Fluxo Circular e PIB',q:'No fluxo circular da riqueza, o mercado financeiro:',opts:['Produz bens e serviços','Conecta poupança e investimento entre superavitários e deficitários','Define as alíquotas tributárias','Controla as exportações'],a:1,exp:'Mercado financeiro conecta poupança e investimento, auxiliando na alocação de recursos.'},
+  {topic:'Mercado de Crédito',q:'Os 5 C do crédito são:',opts:['Câmbio, Capitalização, Crédito, Custo, Carteira','Caráter, Capacidade, Capital, Colateral, Condições','Caixa, Cobertura, Clearing, Capital, CDB','Consórcio, Contrato, Colateral, Câmbio, Custo'],a:1,exp:'5 C = Caráter, Capacidade, Capital, Colateral e Condições.'},
+  {topic:'Mercado de Crédito',q:'Recursos direcionados no mercado de crédito:',opts:['Têm taxas livremente estabelecidas','Correspondem à maior parte das operações','Obedecem condições definidas pelo BACEN','São exclusivos para pessoas físicas'],a:2,exp:'Recursos direcionados têm condições definidas por regras do BACEN (crédito rural, imobiliário, BNDES).'},
+  {topic:'Fundos de Investimento',q:'A cota de um fundo representa:',opts:['O limite de garantia do FGC','Fração ideal do patrimônio líquido do fundo','O spread de crédito do emissor','O rendimento mínimo garantido'],a:1,exp:'Cota = fração ideal do PL do fundo.'},
+  {topic:'Fundos de Investimento',q:'Fundos de investimento TÊM cobertura do FGC?',opts:['Sim, até R$ 250.000','Sim, para fundos de renda fixa','Não, pois não são depósitos bancários','Apenas fundos imobiliários'],a:2,exp:'Fundos NÃO têm cobertura do FGC, pois são condomínios com patrimônio próprio.'},
+  {topic:'Fundos de Investimento',q:'Qual é a função do gestor de um fundo?',opts:['Ser o responsável legal','Fazer a venda e distribuição das cotas','Tomar decisões de investimento','Controlar ativos e passivos como custódia'],a:2,exp:'Gestor = decisões de investimento. Administrador = responsável legal.'},
+  {topic:'Títulos e Renda Fixa',q:'A LTN (Letra do Tesouro Nacional) é:',opts:['Indexada à taxa Selic','Indexada ao IPCA + juros','Prefixada','Indexada ao câmbio'],a:2,exp:'LTN = prefixada. LFT = indexada à Selic. NTN-B = IPCA + juros.'},
+  {topic:'Títulos e Renda Fixa',q:'Hedge com derivativos tem como objetivo:',opts:['Especular sobre alta do mercado','Proteger contra oscilações adversas de preço','Arbitrar distorções entre mercados','Aumentar a alavancagem'],a:1,exp:'Hedge = proteção contra oscilações adversas.'},
+  {topic:'FGC',q:'O FGC garante até:',opts:['R$ 100.000 por CPF em todo o SFN','R$ 250.000 por CPF/CNPJ por instituição','R$ 500.000 por conta em qualquer banco','Valor ilimitado'],a:1,exp:'Limite do FGC = R$ 250.000 por CPF ou CNPJ por instituição associada.'},
+  {topic:'FGC',q:'Qual produto NÃO tem cobertura do FGC?',opts:['CDB','LCI','Fundo de investimento multimercado','Depósito à vista'],a:2,exp:'Fundos de investimento NÃO têm cobertura do FGC.'},
+  {topic:'Análise Fundamentalista',q:'O P/L relaciona:',opts:['Patrimônio e Lucros acumulados','Preço da ação e Lucro por ação','Passivo e Liquidez','Patrimônio e Lucros futuros'],a:1,exp:'P/L = Preço da ação ÷ Lucro por ação.'},
+  {topic:'Análise Fundamentalista',q:'O ROE mede:',opts:['O endividamento da empresa','A margem de lucro sobre a receita','O retorno gerado sobre o patrimônio líquido','A liquidez de curto prazo'],a:2,exp:'ROE = Lucro Líquido ÷ Patrimônio Líquido. Mede eficiência na geração de lucro.'},
+  {topic:'Análise Fundamentalista',q:'A Margem Líquida mede:',opts:['A liquidez de curto prazo','O percentual do lucro sobre o capital dos acionistas','O percentual que sobra da receita líquida após custos','A relação entre dívida e patrimônio'],a:2,exp:'Margem Líquida = Lucro Líquido ÷ Receita Líquida.'},
+  {topic:'Análise Fundamentalista',q:'Liquidez Corrente abaixo de 1 indica:',opts:['Empresa muito lucrativa','Passivos de curto prazo superam ativos circulantes — possível dificuldade financeira','Empresa com alto crescimento','Dividend yield elevado'],a:1,exp:'LC < 1 indica que passivos superam ativos circulantes. Exige atenção ao fluxo de caixa.'},
+  {topic:'Gestão Financeira',q:'As decisões de financiamento tratam de:',opts:['Como alocar recursos em ativos permanentes','A escolha adequada das fontes de recursos (capital de terceiros, próprio, lucros retidos)','Como definir preços dos produtos','Como controlar estoques'],a:1,exp:'Decisões de financiamento = como captar recursos.'},
+];
+
+/* ═══ GP GLOSSARY ═══ */
+const GP_GLOSS=[
+  {key:'PMBOK',val:'Project Management Body of Knowledge — guia de boas práticas do PMI',color:'#3dd4f5'},
+  {key:'PMI',val:'Project Management Institute — publica o PMBOK',color:'#3dd4f5'},
+  {key:'EAP / WBS',val:'Estrutura Analítica do Projeto / Work Breakdown Structure',color:'#4ecba4'},
+  {key:'EVM',val:'Earned Value Management = Gerenciamento do Valor Agregado',color:'#e05c6b'},
+  {key:'VP / PV',val:'Valor Planejado — orçamento para o trabalho agendado',color:'#e05c6b'},
+  {key:'VA / EV',val:'Valor Agregado — trabalho executado em termos do orçamento',color:'#e05c6b'},
+  {key:'CR / AC',val:'Custo Real — custo efetivamente incorrido',color:'#e05c6b'},
+  {key:'SPI',val:'Índice de Desempenho de Prazo = VA ÷ VP',color:'#e05c6b'},
+  {key:'PDCA',val:'Plan-Do-Check-Act = Planejar, Fazer, Verificar, Agir',color:'#9b7fe8'},
+  {key:'ROI',val:'Return on Investment = Retorno sobre Investimento',color:'#f0c040'},
+  {key:'PERT/CPM',val:'Rede de cronograma / Critical Path Method',color:'#f5a623'},
+  {key:'Project Charter',val:'Termo de Abertura — autoriza formalmente o projeto',color:'#5b8dee'},
+  {key:'Business Case',val:'Justifica a realização e os benefícios do projeto',color:'#5b8dee'},
+  {key:'5W2H',val:'What, Why, Where, Who, When, How, How Much — plano de ação',color:'#9b7fe8'},
+];
+
+/* ═══ MC GLOSSARY ═══ */
+const MC_GLOSS=[
+  {key:'SFN',val:'Sistema Financeiro Nacional',color:'#5b8dee'},
+  {key:'CMN',val:'Conselho Monetário Nacional — órgão máximo do SFN',color:'#5b8dee'},
+  {key:'BACEN',val:'Banco Central do Brasil — executor das políticas do CMN',color:'#5b8dee'},
+  {key:'CVM',val:'Comissão de Valores Mobiliários — regula mercado de ações',color:'#5b8dee'},
+  {key:'BNDES',val:'Banco Nacional de Desenvolvimento Econômico e Social',color:'#5b8dee'},
+  {key:'FGC',val:'Fundo Garantidor de Créditos — limite R$250k por CPF por inst.',color:'#e05c6b'},
+  {key:'FGTS',val:'Fundo de Garantia do Tempo de Serviço',color:'#4ecba4'},
+  {key:'SFH / SBPE',val:'Sistema Financeiro de Habitação / Sistema Brasileiro de Poupança e Empréstimo',color:'#4ecba4'},
+  {key:'PIB',val:'Produto Interno Bruto = C + I + G + EL',color:'#f0c040'},
+  {key:'CDB',val:'Certificado de Depósito Bancário — título privado',color:'#f5a623'},
+  {key:'LCI / LCA',val:'Letra de Crédito Imobiliário / Agronegócio — isentos IR PF',color:'#f5a623'},
+  {key:'LFT',val:'Letra Financeira do Tesouro — indexada à Selic',color:'#f5a623'},
+  {key:'LTN',val:'Letra do Tesouro Nacional — prefixada',color:'#f5a623'},
+  {key:'NTN-B',val:'Título público indexado ao IPCA + juros',color:'#f5a623'},
+  {key:'P/L',val:'Preço da ação ÷ Lucro por ação',color:'#4ecba4'},
+  {key:'P/VPA',val:'Preço ÷ Valor Patrimonial por Ação',color:'#4ecba4'},
+  {key:'ROE',val:'Return on Equity = Lucro Líquido ÷ Patrimônio Líquido',color:'#4ecba4'},
+  {key:'PL',val:'Patrimônio Líquido',color:'#4ecba4'},
+  {key:'Sharpe',val:'Índice de retorno ajustado ao risco',color:'#9b7fe8'},
+  {key:'Beta',val:'Medida do risco sistemático da ação vs. mercado',color:'#9b7fe8'},
+  {key:'Benchmark',val:'Referencial para avaliar desempenho de investimento',color:'#f5a623'},
+  {key:'5 C do Crédito',val:'Caráter, Capacidade, Capital, Colateral, Condições',color:'#e05c6b'},
+  {key:'Chinese Wall',val:'Segregação para evitar conflito de interesses em fundos',color:'#3dd4f5'},
+  {key:'ICC',val:'Indicador do Custo do Crédito',color:'#9b7fe8'},
+  {key:'ITR / RI',val:'Informações Trimestrais / Relações com Investidores',color:'#4ecba4'},
+];
+
+/* ═══ INDICATORS ═══ */
+const INDICATORS=[
+  {id:'pl',name:'P/L (Preço / Lucro)',formula:'P/L = Preço da ação ÷ Lucro por ação',desc:'Indica em quantos anos o investidor recuperaria o investimento se 100% do lucro fosse distribuído.',
+  vars:[{id:'preco',label:'Preço da ação (R$)'},{id:'lucro',label:'Lucro por ação (R$)'}],
+  calc:v=>v.preco/v.lucro,unit:'x',
+  interp:r=>[`Um P/L de ${r.toFixed(2)}x significa que, ao preço atual, o investidor levaria aprox. ${r.toFixed(1)} anos para recuperar o investimento via lucro.`,r<10?'P/L abaixo de 10 pode indicar ação relativamente barata, porém pode refletir expectativas pessimistas ou setor em dificuldade.':r>25?'P/L acima de 25 sugere que o mercado projeta forte crescimento futuro — ou que a ação está cara para os fundamentos atuais.':'P/L entre 10 e 25 é comum em empresas maduras de setores estáveis. Sempre compare com empresas do mesmo setor.','Nunca analise o P/L isoladamente. Compare com a média histórica da empresa e com concorrentes do mesmo setor.','Um P/L baixo pode ser oportunidade ou armadilha. Sempre verifique a qualidade e recorrência dos lucros.']},
+  {id:'pvpa',name:'P/VPA (Preço / Valor Patrimonial)',formula:'P/VPA = Preço da ação ÷ Valor Patrimonial por Ação',desc:'Compara o preço de mercado com o valor contábil do patrimônio líquido por ação.',
+  vars:[{id:'preco',label:'Preço da ação (R$)'},{id:'vpa',label:'Valor Patrimonial por Ação (R$)'}],
+  calc:v=>v.preco/v.vpa,unit:'x',
+  interp:r=>[`Um P/VPA de ${r.toFixed(2)}x indica que o mercado paga ${r.toFixed(2)} vezes o valor contábil do patrimônio.`,r<1?'P/VPA abaixo de 1 pode indicar ação "barata" em relação ao patrimônio — porém pode refletir problemas estruturais ou baixa rentabilidade.':r>3?'P/VPA acima de 3 sugere que o mercado reconhece capacidade de geração de valor acima do patrimônio contábil.':'P/VPA entre 1 e 3 é frequente em empresas com rentabilidade moderada. Analise em conjunto com ROE.','Um P/VPA abaixo de 1 merece atenção especial: verifique se o patrimônio é de qualidade e se não há passivos ocultos.','Compare sempre com empresas do mesmo setor — bancos e utilidades têm P/VPA estruturalmente diferente de tecnologia.']},
+  {id:'roe',name:'ROE (Retorno sobre Patrimônio)',formula:'ROE = (Lucro Líquido ÷ Patrimônio Líquido) × 100',desc:'Mede o percentual de retorno que a empresa gera sobre o capital investido pelos acionistas.',
+  vars:[{id:'lucro',label:'Lucro Líquido (R$)'},{id:'pl',label:'Patrimônio Líquido (R$)'}],
+  calc:v=>(v.lucro/v.pl)*100,unit:'%',
+  interp:r=>[`Um ROE de ${r.toFixed(2)}% indica que para cada R$ 100 de patrimônio líquido, a empresa gerou R$ ${r.toFixed(2)} de lucro.`,r<8?'ROE abaixo de 8% pode estar aquém do custo de capital próprio — indicando possível destruição de valor para o acionista.':r>20?'ROE acima de 20% indica excelente capacidade de geração de lucro sobre o patrimônio.':'ROE entre 8% e 20% é razoável para muitos setores. Analise consistência histórica.','O ROE pode ser inflado por alta alavancagem. Use em conjunto com o índice de endividamento.','Compare o ROE com a taxa Selic — se inferior à Selic, a empresa pode estar destruindo valor econômico.']},
+  {id:'ml',name:'Margem Líquida',formula:'Margem Líquida = (Lucro Líquido ÷ Receita Líquida) × 100',desc:'Mede o percentual que sobra da receita após todos os custos, despesas e tributos.',
+  vars:[{id:'lucro',label:'Lucro Líquido (R$)'},{id:'receita',label:'Receita Líquida (R$)'}],
+  calc:v=>(v.lucro/v.receita)*100,unit:'%',
+  interp:r=>[`Uma Margem Líquida de ${r.toFixed(2)}% significa que de cada R$ 100 de receita, R$ ${r.toFixed(2)} chegam como lucro ao acionista.`,r<5?'Margem abaixo de 5% é comum em setores com baixa agregação de valor (varejo, distribuição). Não é necessariamente ruim — depende do setor.':r>20?'Margem acima de 20% indica forte capacidade de rentabilizar a receita, comum em tecnologia, farmacêutico e financeiro.':'Margem entre 5% e 20% é adequada para muitos setores industriais e de serviços.','Margens em queda podem indicar aumento de custos, pressão competitiva ou deterioração do modelo de negócio.','Compare com empresas do mesmo setor — setores de commodities têm margens estruturalmente menores.']},
+  {id:'lc',name:'Liquidez Corrente',formula:'Liquidez Corrente = Ativo Circulante ÷ Passivo Circulante',desc:'Mede a capacidade da empresa de pagar suas obrigações de curto prazo.',
+  vars:[{id:'ac',label:'Ativo Circulante (R$)'},{id:'pc',label:'Passivo Circulante (R$)'}],
+  calc:v=>v.ac/v.pc,unit:'x',
+  interp:r=>[`Uma Liquidez Corrente de ${r.toFixed(2)}x indica que para cada R$ 1 de dívida de curto prazo, a empresa possui R$ ${r.toFixed(2)} em ativos circulantes.`,r<1?'LC abaixo de 1 indica que passivos superam ativos circulantes — potencial dificuldade para honrar compromissos. Exige atenção ao fluxo de caixa.':r>3?'LC acima de 3 sugere folga financeira, mas pode indicar excesso de recursos ociosos.':'LC entre 1 e 3 é razoável para a maioria dos setores.','Setores com ciclo operacional curto (varejo, alimentos) operam com LC próxima de 1.','A qualidade dos ativos circulantes importa tanto quanto o valor: recebíveis de boa qualidade valem mais do que estoques de baixa rotatividade.']},
+  {id:'cy',name:'Cash-Yield (Dividend Yield)',formula:'Cash-Yield = (Dividendos por ação ÷ Preço da ação) × 100',desc:'Percentual de retorno em dividendos em relação ao preço atual da ação.',
+  vars:[{id:'div',label:'Dividendos por ação (R$)'},{id:'preco',label:'Preço da ação (R$)'}],
+  calc:v=>(v.div/v.preco)*100,unit:'%',
+  interp:r=>[`Um Cash-Yield de ${r.toFixed(2)}% indica que o investidor recebe R$ ${r.toFixed(2)} em dividendos para cada R$ 100 investidos ao preço atual.`,r<3?'Cash-Yield abaixo de 3% é comum em empresas de crescimento que reinvestem a maioria dos lucros.':r>10?'Cash-Yield acima de 10% merece investigação — pode refletir queda no preço da ação ou dividendos insustentáveis.':'Cash-Yield entre 3% e 10% é frequente em empresas maduras com política consistente de distribuição.','Um yield muito alto pode ser resultado de queda no preço da ação, não necessariamente aumento nos dividendos.','Compare o dividend yield com a renda fixa (CDI/Selic) — o yield precisa compensar o risco adicional da renda variável.']},
+  {id:'end',name:'Endividamento',formula:'Endividamento = (Passivo Total ÷ Patrimônio Líquido) × 100',desc:'Mede o peso do capital de terceiros em relação ao capital próprio da empresa.',
+  vars:[{id:'passivo',label:'Passivo Total (R$)'},{id:'pl',label:'Patrimônio Líquido (R$)'}],
+  calc:v=>(v.passivo/v.pl)*100,unit:'%',
+  interp:r=>[`Um Endividamento de ${r.toFixed(2)}% indica que para cada R$ 100 de patrimônio líquido, a empresa possui R$ ${r.toFixed(2)} de passivo total.`,r<100?'Endividamento abaixo de 100% indica estrutura de capital relativamente conservadora.':r>300?'Endividamento acima de 300% indica alta alavancagem, aumentando o risco financeiro e sensibilidade a variações nos juros.':'Endividamento entre 100% e 300% é comum em setores intensivos em capital.','Endividamento elevado pode ser estratégico em setores estáveis, mas é preocupante em setores cíclicos.','Analise o perfil da dívida: dívida de longo prazo com custo razoável é menos arriscada que dívida de curto prazo com custo elevado.']},
+];
+
+/* ═══ SEARCH INDEX ═══ */
+const SEARCH_INDEX={
+  gp:[
+    {title:'O que é um Projeto',desc:'Esforço temporário, exclusivo, início e fim',section:'sec-projeto'},
+    {title:'Gestão de Projetos / PMBOK',desc:'Habilidades, ferramentas e técnicas',section:'sec-gestao'},
+    {title:'Business Case / Project Charter',desc:'Justifica o projeto, autoriza o gerente',section:'sec-integracao'},
+    {title:'Gerenciamento de Integração',desc:'Une todas as partes, controle de mudanças',section:'sec-integracao'},
+    {title:'EAP / WBS',desc:'Estrutura Analítica do Projeto',section:'sec-escopo'},
+    {title:'Gerenciamento de Escopo',desc:'Define o que está e o que não está',section:'sec-escopo'},
+    {title:'Gerenciamento de Tempo / Cronograma',desc:'Gantt, PERT, Caminho Crítico',section:'sec-tempo'},
+    {title:'EVM / Valor Agregado / SPI',desc:'VP, VA, CR, SPI',section:'sec-custos'},
+    {title:'Gerenciamento de Custos',desc:'Orçamento, EVM',section:'sec-custos'},
+    {title:'PDCA / Ishikawa / 5 Porquês / Pareto',desc:'Ferramentas de qualidade',section:'sec-qualidade'},
+    {title:'Gerenciamento da Qualidade',desc:'3 processos: Planejar, Gerenciar, Controlar',section:'sec-qualidade'},
+    {title:'Triângulo das Restrições',desc:'Escopo, Tempo, Custo se influenciam',section:'sec-relacao'},
+    {title:'Glossário GP',desc:'PMBOK, EAP, EVM, SPI, PDCA',section:'sec-glossario-map'},
+  ],
+  mc:[
+    {title:'SFN — Sistema Financeiro Nacional',desc:'CMN, BACEN, CVM, estrutura',section:'mc-sec-sfn'},
+    {title:'CMN / BACEN / CVM',desc:'Órgãos do subsistema normativo',section:'mc-sec-sfn'},
+    {title:'Risco de Mercado, Crédito e Liquidez',desc:'Três tipos centrais de risco',section:'mc-sec-risco'},
+    {title:'Beta / Risco Sistemático vs. Não Sistemático',desc:'Diversificação, Ibovespa',section:'mc-sec-risco'},
+    {title:'Princípio da Dominância / Índice Sharpe',desc:'Risco x Retorno, perfil do investidor',section:'mc-sec-retorno'},
+    {title:'Horizonte de Investimento / Diversificação',desc:'Prazo, liquidez, risco',section:'mc-sec-horizonte'},
+    {title:'PIB = C + I + G + EL',desc:'Fluxo circular da riqueza',section:'mc-sec-pib'},
+    {title:'5 C do Crédito / Recursos Livres e Direcionados',desc:'Mercado de crédito',section:'mc-sec-credito'},
+    {title:'Fundos de Investimento',desc:'Cota, PL, administrador, gestor, tipos',section:'mc-sec-fundos'},
+    {title:'CDB / LCI / LCA / LFT / NTN-B',desc:'Títulos públicos e privados',section:'mc-sec-titulos'},
+    {title:'FGC — Fundo Garantidor de Créditos',desc:'Limite R$250k, produtos cobertos',section:'mc-sec-fgc'},
+    {title:'Análise Fundamentalista',desc:'P/L, P/VPA, ROE, Margem Líquida, Liquidez',section:'mc-sec-fundamentalista'},
+    {title:'Gestão Financeira',desc:'Decisões investimento vs. financiamento',section:'mc-sec-gestfinanceira'},
+  ]
+};
+
+/* ═══ STATE ═══ */
+let currentSubject=null,currentPage='dashboard';
+let fcDeck=[],fcIndex=0,fcFlipped=false,fcFilter='Todos';
+let quizMode='all',qIndex=0,qAnswers=[],qShuffled=[];
+
+/* ═══ STORAGE ═══ */
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+function getHistory(s){return lsGet('hub_hist_'+s,[])}
+function saveHistory(s,h){lsSet('hub_hist_'+s,h)}
+function getProgress(s){return lsGet('hub_prog_'+s,{seenTopics:[],seenFC:[],quizCount:0,bestScore:null})}
+function saveProgress(s,p){lsSet('hub_prog_'+s,p)}
+function getAllProgress(){
+  let sims=0,fc=0,best=null;
+  ['gp','mc'].forEach(s=>{const p=getProgress(s),h=getHistory(s);sims+=p.quizCount||0;fc+=(p.seenFC||[]).length;h.forEach(r=>{if(!best||r.score>best)best=r.score;});});
+  return{sims,fc,best};
+}
+
+/* ═══ HUB ═══ */
+function updateHubStats(){
+  const{sims,fc,best}=getAllProgress();
+  document.getElementById('hs-simulados').textContent=sims;
+  document.getElementById('hs-flashcards').textContent=fc;
+  document.getElementById('hs-melhor').textContent=best?best.toFixed(1):'—';
+}
+
+function openSubject(sid){
+  currentSubject=sid;
+  const s=SUBJECTS[sid];
+  document.getElementById('hub-screen').style.display='none';
+  document.getElementById('subject-app').classList.add('active');
+  document.getElementById('sb-name').textContent=s.name;
+  document.getElementById('nav-calculadora').style.display=s.hasCalc?'flex':'none';
+  // inject mind map
+  const mc=document.getElementById('mind-map-container');
+  mc.innerHTML='';
+  const center=document.createElement('div');
+  center.className='center-node';
+  center.innerHTML='<h2>'+s.centerTitle+'</h2><p class="center-sub">'+s.centerSub+'</p>';
+  mc.appendChild(center);
+  const tmpl=document.getElementById(s.mapId);
+  if(tmpl)mc.insertAdjacentHTML('beforeend',tmpl.innerHTML);
+  // setup pages
+  document.getElementById('dash-title').textContent=s.name;
+  document.getElementById('dash-sub').textContent=s.sub;
+  document.getElementById('mapa-sub').textContent=s.sub;
+  document.getElementById('gloss-sub').textContent=s.name+' · Siglas e Termos';
+  document.getElementById('quiz-sub').textContent=s.sub;
+  document.getElementById('dash-tip-text').textContent=s.tip;
+  buildDashCards(s);
+  const fcData=sid==='gp'?GP_FC:MC_FC;
+  document.getElementById('fc-badge').textContent=fcData.length;
+  showPage('dashboard');
+  updateSidebarProgress();
+  updateDashStats();
+}
+
+function buildDashCards(s){
+  const fcData=s.id==='gp'?GP_FC:MC_FC;
+  const qData=s.id==='gp'?GP_Q:MC_Q;
+  const cards=[
+    {icon:'🗺️',title:'Mapa Mental',desc:'Tópicos organizados de forma visual e hierárquica',page:'mapa',accent:'var(--c6)',ibg:'rgba(61,212,245,.12)',badge:null},
+    {icon:'🃏',title:'Flashcards',desc:'Cards interativos com flip 3D por tema',page:'flashcards',accent:'var(--c5)',ibg:'rgba(155,127,232,.12)',badge:fcData.length+' cards'},
+    {icon:'📖',title:'Glossário',desc:'Siglas e termos técnicos explicados',page:'glossario',accent:'var(--c2)',ibg:'rgba(78,203,164,.12)',badge:null},
+    {icon:'🧠',title:'Simulado',desc:'Questões com análise de desempenho',page:'simulado',accent:'var(--c1)',ibg:'rgba(91,141,238,.12)',badge:qData.length+' questões'},
+    {icon:'📊',title:'Histórico',desc:'Acompanhe sua evolução',page:'historico',accent:'var(--c3)',ibg:'rgba(245,166,35,.12)',badge:null},
+    {icon:'🔁',title:'Revisar Erros',desc:'Foque onde você mais errou',page:'revisao',accent:'var(--c4)',ibg:'rgba(224,92,107,.12)',badge:null},
+  ];
+  if(s.hasCalc) cards.splice(3,0,{icon:'🧮',title:'Calculadora',desc:'Calcule e interprete indicadores fundamentalistas',page:'calculadora',accent:'var(--c2)',ibg:'rgba(78,203,164,.12)',badge:INDICATORS.length+' indicadores'});
+  document.getElementById('dash-cards').innerHTML=cards.map(c=>`
+    <div class="dash-card" style="--card-accent:${c.accent};--icon-bg:${c.ibg}" onclick="showPage('${c.page}')">
+      <div class="dash-card-icon">${c.icon}</div>
+      <h3>${c.title}</h3><p>${c.desc}</p>
+      ${c.badge?'<span class="dc-badge">'+c.badge+'</span>':''}
+    </div>`).join('');
+}
+
+function goHub(){
+  document.getElementById('subject-app').classList.remove('active');
+  document.getElementById('hub-screen').style.display='';
+  updateHubStats();
+}
+
+/* ═══ NAVIGATION ═══ */
+function showPage(page){
+  document.querySelectorAll('.page-view').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.snav-item').forEach(n=>n.classList.remove('active'));
+  const el=document.getElementById('page-'+page);
+  if(el)el.classList.add('active');
+  const nav=document.getElementById('nav-'+page);
+  if(nav)nav.classList.add('active');
+  currentPage=page;
+  if(page==='historico')renderHistory();
+  if(page==='revisao')renderRevision();
+  if(page==='glossario')renderGlossary();
+  if(page==='flashcards')initFlashcards();
+  if(page==='calculadora')initCalc();
+  if(page==='simulado'){
+    document.getElementById('quiz-launch').style.display='block';
+    document.getElementById('quiz-active').style.display='none';
+    document.getElementById('quiz-results').style.display='none';
+  }
+  if(currentSubject){
+    const prog=getProgress(currentSubject);
+    if(!prog.seenTopics.includes(page)){prog.seenTopics.push(page);saveProgress(currentSubject,prog);}
+    updateSidebarProgress();
+  }
+  if(window.innerWidth<=768){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+
+/* ═══ MIND MAP ═══ */
+function toggleCard(header){
+  const card=header.closest('.section-card');
+  card.classList.toggle('open');
+  const topic=card.dataset.topic;
+  if(card.classList.contains('open')&&topic&&currentSubject){
+    const prog=getProgress(currentSubject);
+    if(!prog.seenTopics.includes(topic)){prog.seenTopics.push(topic);saveProgress(currentSubject,prog);updateSidebarProgress();}
+  }
+}
+function toggleAll(open){
+  document.querySelectorAll('#mind-map-container .section-card').forEach(c=>{if(open)c.classList.add('open');else c.classList.remove('open');});
+  if(open&&currentSubject){
+    const prog=getProgress(currentSubject);
+    Object.keys(SUBJECTS[currentSubject].sectionIds).forEach(t=>{if(!prog.seenTopics.includes(t))prog.seenTopics.push(t);});
+    saveProgress(currentSubject,prog);updateSidebarProgress();
+  }
+}
+function scrollToSection(secId){
+  showPage('mapa');
+  setTimeout(()=>{
+    const el=document.getElementById(secId);
+    if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'start'});
+      setTimeout(()=>{el.classList.add('highlight');setTimeout(()=>el.classList.remove('highlight'),800);},400);}
+  },200);
+}
+
+/* ═══ SEARCH ═══ */
+function handleSearch(v){
+  document.getElementById('search-clear').style.display=v?'block':'none';
+  if(!v){document.getElementById('search-results').style.display='none';return;}
+  const t=v.toLowerCase(),s=currentSubject;
+  const idx=s?SEARCH_INDEX[s]:[];
+  const gloss=s?(s==='gp'?GP_GLOSS:MC_GLOSS):[];
+  const hits=idx.filter(i=>i.title.toLowerCase().includes(t)||i.desc.toLowerCase().includes(t)).slice(0,6);
+  const gh=gloss.filter(g=>g.key.toLowerCase().includes(t)||g.val.toLowerCase().includes(t)).slice(0,4);
+  const items=[
+    ...hits.map(h=>'<div class="sr-item" onclick="searchGo(\''+h.section+'\')"><span class="sr-tag">🗺️ Mapa</span><div><div class="sr-title">'+h.title+'</div><div class="sr-desc">'+h.desc+'</div></div></div>'),
+    ...gh.map(g=>'<div class="sr-item" onclick="showPage(\'glossario\')"><span class="sr-tag" style="background:'+g.color+'22;color:'+g.color+'">📖 Sigla</span><div><div class="sr-title">'+g.key+'</div><div class="sr-desc">'+g.val.substring(0,55)+'…</div></div></div>')
+  ];
+  const res=document.getElementById('search-results');
+  res.innerHTML=items.length?items.join(''):'<div class="sr-item"><div class="sr-desc" style="padding:4px">Nenhum resultado para "'+v+'"</div></div>';
+  res.style.display='block';
+}
+function showSR(){if(document.getElementById('search-input').value)document.getElementById('search-results').style.display='block';}
+function hideSR(){document.getElementById('search-results').style.display='none';}
+function clearSearch(){document.getElementById('search-input').value='';document.getElementById('search-clear').style.display='none';hideSR();}
+function searchGo(secId){clearSearch();scrollToSection(secId);}
+
+/* ═══ FLASHCARDS ═══ */
+function initFlashcards(){
+  const data=currentSubject==='gp'?GP_FC:MC_FC;
+  const topics=['Todos',...new Set(data.map(f=>f.topic))];
+  if(!document.getElementById('fc-filters').innerHTML){
+    document.getElementById('fc-filters').innerHTML=topics.map(t=>'<button class="fc-filter'+(t==='Todos'?' active':'')+'" onclick="setFCFilter(\''+t.replace(/'/g,"\\'")+'\')">' +t+'</button>').join('');
+  }
+  fcFilter='Todos';rebuildDeck();
+}
+function setFCFilter(topic){
+  fcFilter=topic;
+  document.querySelectorAll('.fc-filter').forEach(b=>b.classList.toggle('active',b.textContent===topic));
+  rebuildDeck();
+}
+function rebuildDeck(){
+  const data=currentSubject==='gp'?GP_FC:MC_FC;
+  fcDeck=fcFilter==='Todos'?[...data]:data.filter(f=>f.topic===fcFilter);
+  fcIndex=0;fcFlipped=false;
+  document.getElementById('fc-filters').innerHTML='';
+  initFlashcards();
+  renderFC();
+}
+function shuffleCards(){fcDeck.sort(()=>Math.random()-.5);fcIndex=0;fcFlipped=false;renderFC();}
+function renderFC(){
+  if(!fcDeck.length)return;
+  const c=fcDeck[fcIndex],s=currentSubject;
+  const tc=SUBJECTS[s].topicColors[c.topic]||'#5b8dee';
+  document.getElementById('fc-counter').textContent='Card '+(fcIndex+1)+' de '+fcDeck.length+' · '+c.topic;
+  document.getElementById('fc-card').classList.remove('flipped');fcFlipped=false;
+  document.getElementById('fc-question').textContent=c.q;
+  document.getElementById('fc-answer').textContent=c.a;
+  document.getElementById('fc-illus-f').textContent=c.illus;
+  document.getElementById('fc-illus-f').style.background=tc+'22';
+  document.getElementById('fc-badge-front').textContent=c.topic;
+  document.getElementById('fc-badge-front').style.cssText='background:'+tc+'22;color:'+tc+';border:1px solid '+tc+'44';
+  const prog=getProgress(s);
+  const id=c.topic+'::'+c.q;
+  if(!prog.seenFC.includes(id)){prog.seenFC.push(id);saveProgress(s,prog);updateSidebarProgress();updateDashStats();}
+}
+function flipCard(){fcFlipped=!fcFlipped;document.getElementById('fc-card').classList.toggle('flipped',fcFlipped);}
+function nextCard(){fcIndex=(fcIndex+1)%fcDeck.length;renderFC();}
+function prevCard(){fcIndex=(fcIndex-1+fcDeck.length)%fcDeck.length;renderFC();}
+
+/* ═══ GLOSSARY ═══ */
+function renderGlossary(){
+  const data=currentSubject==='gp'?GP_GLOSS:MC_GLOSS;
+  document.getElementById('gloss-grid').innerHTML=data.map(item=>'<div class="gloss-item" data-key="'+item.key.toLowerCase()+'" data-val="'+item.val.toLowerCase()+'"><div class="gloss-key" style="color:'+item.color+'">'+item.key+'</div><div class="gloss-val">'+item.val+'</div></div>').join('');
+}
+function filterGlossary(q){
+  const t=q.toLowerCase();
+  document.querySelectorAll('.gloss-item').forEach(el=>el.classList.toggle('hidden',!(!t||el.dataset.key.includes(t)||el.dataset.val.includes(t))));
+}
+
+/* ═══ CALCULATOR ═══ */
+function initCalc(){
+  document.getElementById('calc-selector').innerHTML=INDICATORS.map((i,idx)=>'<button class="calc-btn-sel'+(idx===0?' active':'')+'" onclick="selectIndicator(\''+i.id+'\')">'+i.name.split('(')[0].trim()+'</button>').join('');
+  renderCalc(INDICATORS[0].id);
+}
+function selectIndicator(id){
+  document.querySelectorAll('.calc-btn-sel').forEach(b=>b.classList.toggle('active',b.textContent.trim()===INDICATORS.find(i=>i.id===id).name.split('(')[0].trim()));
+  renderCalc(id);
+}
+function renderCalc(id){
+  const ind=INDICATORS.find(i=>i.id===id);
+  document.getElementById('calc-main').innerHTML='<div class="calc-card"><div class="calc-indicator-name">'+ind.name+'</div><div class="calc-formula-box">'+ind.formula+'</div><div class="calc-desc">'+ind.desc+'</div><div class="calc-vars">'+ind.vars.map(v=>'<div class="calc-var-row"><span class="calc-var-label">'+v.label+'</span><input class="calc-input" type="number" id="ci_'+v.id+'" placeholder="0,00" step="any"></div>').join('')+'</div><button class="calc-calculate-btn" onclick="calculate(\''+id+'\')">Calcular →</button><div class="calc-result-panel" id="calc-result"></div></div>';
+}
+function calculate(id){
+  const ind=INDICATORS.find(i=>i.id===id);
+  const vals={};let valid=true;
+  ind.vars.forEach(v=>{const el=document.getElementById('ci_'+v.id);const val=parseFloat(el.value);if(isNaN(val)||val===0){el.style.borderColor='var(--c4)';valid=false;}else{el.style.borderColor='';vals[v.id]=val;}});
+  if(!valid){alert('Preencha todos os campos com valores válidos (diferentes de zero).');return;}
+  const result=ind.calc(vals);
+  const panel=document.getElementById('calc-result');
+  const interp=ind.interp(result);
+  panel.className='calc-result-panel show';
+  panel.innerHTML='<div class="calc-result-value">'+result.toFixed(2)+ind.unit+'</div><div class="calc-result-label">Resultado · '+ind.name+'</div><div class="calc-interpretation"><div class="calc-interp-title">📊 Interpretação para Prova</div>'+interp.map(i=>'<div class="calc-interp-item">'+i+'</div>').join('')+'<div class="calc-interp-item" style="color:var(--muted);font-style:italic;margin-top:8px">⚠️ Nenhum indicador deve ser analisado isoladamente. Sempre compare com empresas do mesmo setor e com o histórico da empresa.</div></div><div style="margin-top:12px;text-align:center"><button onclick="scrollToSection(\'mc-sec-fundamentalista\')" style="font-size:12px;padding:7px 16px;border-radius:8px;border:1px solid rgba(78,203,164,.3);background:rgba(78,203,164,.08);color:var(--c2);cursor:pointer">📖 Revisar no Mapa Mental →</button></div>';
+}
+
+/* ═══ QUIZ ═══ */
+function selectMode(el,mode){document.querySelectorAll('.qm-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');quizMode=mode;}
+function startQuiz(){
+  const s=currentSubject;
+  let pool=s==='gp'?[...GP_Q]:[...MC_Q];
+  if(quizMode==='quick')pool=pool.sort(()=>Math.random()-.5).slice(0,10);
+  else if(quizMode==='weak'){
+    const hist=getHistory(s);
+    if(!hist.length){alert('Faça um simulado completo primeiro!');return;}
+    const weak=getWeakTopics(hist);
+    if(weak.length)pool=pool.filter(q=>weak.includes(q.topic));
+    if(!pool.length)pool=s==='gp'?[...GP_Q]:[...MC_Q];
+  }
+  qShuffled=pool.sort(()=>Math.random()-.5);qIndex=0;qAnswers=[];
+  document.getElementById('quiz-launch').style.display='none';
+  document.getElementById('quiz-active').style.display='block';
+  document.getElementById('quiz-results').style.display='none';
+  renderQuestion();
+}
+function renderQuestion(){
+  const q=qShuffled[qIndex],total=qShuffled.length,pct=Math.round((qIndex/total)*100);
+  const tc=SUBJECTS[currentSubject].topicColors[q.topic]||'#5b8dee';
+  document.getElementById('q-counter').textContent='Questão '+(qIndex+1)+' de '+total;
+  document.getElementById('q-topic-badge').textContent=q.topic;
+  document.getElementById('q-topic-badge').style.cssText='font-size:11px;padding:4px 11px;border-radius:99px;font-weight:600;background:'+tc+'22;color:'+tc+';border:1px solid '+tc+'44';
+  document.getElementById('q-bar').style.width=pct+'%';
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('q-opts').innerHTML=q.opts.map((o,i)=>'<button class="q-opt" onclick="answerQ('+i+')">'+String.fromCharCode(65+i)+') '+o+'</button>').join('');
+  document.getElementById('q-feedback').innerHTML='';
+}
+function answerQ(idx){
+  const q=qShuffled[qIndex],correct=q.a;
+  qAnswers.push({topic:q.topic,correct:idx===correct});
+  const btns=document.querySelectorAll('.q-opt');
+  btns.forEach(b=>b.disabled=true);
+  btns[idx].classList.add(idx===correct?'correct':'wrong');
+  if(idx!==correct)btns[correct].classList.add('show-correct');
+  document.getElementById('q-feedback').innerHTML='<div class="q-explain">💡 '+q.exp+'</div>';
+  setTimeout(()=>{qIndex++;if(qIndex<qShuffled.length)renderQuestion();else showQuizResults();},1800);
+}
+function showQuizResults(){
+  const s=currentSubject,total=qAnswers.length,right=qAnswers.filter(a=>a.correct).length;
+  const score=parseFloat((right/total*10).toFixed(1)),pct=Math.round(right/total*100);
+  const col=score>=7?'#4ecba4':score>=5?'#f5a623':'#e05c6b';
+  const msg=score>=7?'🎉 Ótimo resultado!':score>=5?'📚 Razoável — foque nos tópicos em vermelho!':'⚠️ Revise os tópicos abaixo!';
+  const topics={};
+  qAnswers.forEach(a=>{if(!topics[a.topic])topics[a.topic]={c:0,t:0};topics[a.topic].t++;if(a.correct)topics[a.topic].c++;});
+  const hist=getHistory(s);
+  hist.unshift({date:new Date().toISOString(),score,right,total,topics:Object.fromEntries(Object.entries(topics).map(([k,v])=>[k,{c:v.c,t:v.t}]))});
+  saveHistory(s,hist.slice(0,20));
+  const prog=getProgress(s);
+  prog.quizCount=(prog.quizCount||0)+1;
+  if(!prog.bestScore||score>prog.bestScore)prog.bestScore=score;
+  saveProgress(s,prog);
+  updateSidebarProgress();updateDashStats();updateHubStats();
+  const tc=SUBJECTS[s].topicColors;
+  const topicBars=Object.entries(topics).sort((a,b)=>(b[1].c/b[1].t)-(a[1].c/a[1].t)).map(([name,st])=>{
+    const p=Math.round(st.c/st.t*100),c=p>=70?'#4ecba4':p>=50?'#f5a623':'#e05c6b';
+    return '<div class="result-bar-wrap"><div class="result-bar-label"><span style="color:'+(tc[name]||'#ccc')+'">'+name+'</span><span style="color:'+c+';font-weight:700">'+st.c+' de '+st.t+' ('+p+'%)'+(p<70?' 👈':'')+'</span></div><div class="result-bar-track"><div class="result-bar-fill" style="width:0%;background:'+c+'" data-w="'+p+'"></div></div></div>';
+  }).join('');
+  document.getElementById('quiz-active').style.display='none';
+  const res=document.getElementById('quiz-results');
+  res.style.display='block';
+  res.innerHTML='<div style="text-align:center;margin-bottom:26px"><div style="font-family:\'Syne\',sans-serif;font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px">Resultado</div><div style="position:relative;width:180px;height:100px;margin:0 auto 13px"><svg viewBox="0 0 200 110" style="width:180px;height:100px"><path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#2a2d3a" stroke-width="18" stroke-linecap="round"/><path id="gaugePath" d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="'+col+'" stroke-width="18" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"/><text x="100" y="86" text-anchor="middle" font-family="Syne,sans-serif" font-size="28" font-weight="800" fill="'+col+'">'+score+'</text><text x="100" y="104" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#8a8fa8">de 10.0</text></svg></div><p style="font-size:17px;font-weight:700;color:#fff;margin-bottom:4px">'+right+' de '+total+' corretas</p><p style="font-size:13px;color:var(--muted)">'+msg+'</p></div><div style="border-top:1px solid var(--border);padding-top:20px;margin-bottom:20px"><div style="font-family:\'Syne\',sans-serif;font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:13px">Desempenho por Tópico</div>'+topicBars+'</div><div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap"><button onclick="startQuiz()" style="font-family:\'Syne\',sans-serif;font-size:13px;font-weight:700;padding:11px 26px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff">🔄 Refazer</button><button onclick="showPage(\'historico\')" style="font-family:\'Syne\',sans-serif;font-size:13px;font-weight:700;padding:11px 26px;border-radius:10px;border:1px solid var(--border);cursor:pointer;background:var(--surface2);color:var(--muted)">📊 Histórico</button><button onclick="showPage(\'revisao\')" style="font-family:\'Syne\',sans-serif;font-size:13px;font-weight:700;padding:11px 26px;border-radius:10px;border:1px solid var(--border);cursor:pointer;background:var(--surface2);color:var(--muted)">🔁 Revisar</button></div>';
+  setTimeout(()=>{
+    const el=document.getElementById('gaugePath');
+    if(el){el.style.transition='stroke-dashoffset 1.2s ease';el.style.strokeDashoffset=251-(pct/100)*251;}
+    document.querySelectorAll('.result-bar-fill').forEach(b=>setTimeout(()=>{b.style.width=b.dataset.w+'%';},100));
+  },100);
+}
+
+/* ═══ HISTORY ═══ */
+function renderHistory(){
+  const s=currentSubject,hist=getHistory(s),container=document.getElementById('hist-content');
+  if(!hist.length){container.innerHTML='<div class="hist-empty"><div class="he-icon">📊</div><p>Nenhum simulado realizado ainda.</p><br><button onclick="showPage(\'simulado\')" style="font-family:\'Syne\',sans-serif;font-size:13px;font-weight:700;padding:10px 22px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff">▶ Iniciar</button></div>';return;}
+  const scores=hist.map(h=>h.score),best=Math.max(...scores),avg=parseFloat((scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1));
+  container.innerHTML='<div class="hist-stats"><div class="hist-stat"><div class="hs-val">'+hist.length+'</div><div class="hs-label">Simulados</div></div><div class="hist-stat"><div class="hs-val" style="color:#4ecba4">'+best.toFixed(1)+'</div><div class="hs-label">Melhor Nota</div></div><div class="hist-stat"><div class="hs-val" style="color:var(--c1)">'+avg+'</div><div class="hs-label">Média</div></div><div class="hist-stat"><div class="hs-val">'+hist[0].score.toFixed(1)+'</div><div class="hs-label">Última Nota</div></div></div>'+(hist.length>1?'<div class="evo-chart"><div class="evo-title">Evolução das Notas</div><div class="evo-bars">'+hist.slice(0,10).reverse().map(h=>{const p=Math.round(h.score/10*100),col=h.score>=7?'#4ecba4':h.score>=5?'#f5a623':'#e05c6b',d=new Date(h.date);return'<div class="evo-bar-wrap"><div class="evo-bar" style="height:'+p+'%;background:'+col+'"></div><div class="evo-bar-label">'+d.getDate()+'/'+(d.getMonth()+1)+'</div></div>';}).join('')+'</div></div>':'')+'<div style="font-family:\'Syne\',sans-serif;font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">Tentativas</div><div class="hist-list">'+hist.slice(0,10).map(h=>{const col=h.score>=7?'#4ecba4':h.score>=5?'#f5a623':'#e05c6b',d=new Date(h.date);const bars=Object.entries(h.topics||{}).slice(0,4).map(([n,st])=>{const p=Math.round(st.c/st.t*100),c=p>=70?'#4ecba4':p>=50?'#f5a623':'#e05c6b';return'<div class="hi-bar-row"><span class="hi-bar-label">'+n.split(' ').slice(-1)+'</span><div class="hi-bar-track"><div class="hi-bar-fill" style="width:'+p+'%;background:'+c+'"></div></div><span style="font-size:10px;color:'+c+';min-width:28px;text-align:right">'+p+'%</span></div>';}).join('');return'<div class="hist-item"><div class="hi-score" style="background:'+col+'22;color:'+col+'">'+h.score.toFixed(1)+'</div><div class="hi-info"><div class="hi-date">'+d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</div><div class="hi-detail">'+h.right+' de '+h.total+' corretas · '+Math.round(h.right/h.total*100)+'%</div></div><div class="hi-bars">'+bars+'</div></div>';}).join('')+'</div>';
+}
+
+/* ═══ REVISION ═══ */
+function getWeakTopics(hist){
+  const agg={};
+  hist.forEach(h=>Object.entries(h.topics||{}).forEach(([t,s])=>{if(!agg[t])agg[t]={c:0,t:0};agg[t].c+=s.c;agg[t].t+=s.t;}));
+  return Object.entries(agg).filter(([,s])=>s.t>0&&s.c/s.t<0.7).map(([t])=>t);
+}
+function renderRevision(){
+  const s=currentSubject,hist=getHistory(s),container=document.getElementById('rev-content');
+  if(!hist.length){container.innerHTML='<div class="hist-empty"><div class="he-icon">🔁</div><p>Faça um simulado primeiro para ver seus pontos fracos.</p><br><button onclick="showPage(\'simulado\')" style="font-family:\'Syne\',sans-serif;font-size:13px;font-weight:700;padding:10px 22px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff">▶ Fazer Simulado</button></div>';return;}
+  const agg={};
+  hist.forEach(h=>Object.entries(h.topics||{}).forEach(([t,st])=>{if(!agg[t])agg[t]={c:0,t:0};agg[t].c+=st.c;agg[t].t+=st.t;}));
+  const sorted=Object.entries(agg).filter(([,st])=>st.t>0).map(([t,st])=>({topic:t,pct:Math.round(st.c/st.t*100),c:st.c,t:st.t})).sort((a,b)=>a.pct-b.pct);
+  const weak=sorted.filter(x=>x.pct<70);
+  if(!weak.length){container.innerHTML='<div class="hist-empty"><div class="he-icon">🏆</div><p>Parabéns! Nenhum tópico abaixo de 70%.<br>Continue praticando!</p></div>';return;}
+  const sct=SUBJECTS[s],summ=sct.topicSummaries,sids=sct.sectionIds,tc=sct.topicColors;
+  const fcData=s==='gp'?GP_FC:MC_FC,qData=s==='gp'?GP_Q:MC_Q;
+  container.innerHTML='<div class="alert-box c4" style="margin-bottom:18px"><span class="icon">🎯</span><span><strong>'+weak.length+' tópico(s) abaixo de 70%.</strong> Foque neles para melhorar sua nota!</span></div>'+sorted.map(x=>{
+    const col=x.pct>=70?'#4ecba4':x.pct>=50?'#f5a623':'#e05c6b',tcol=tc[x.topic]||'#5b8dee',secId=sids[x.topic];
+    const fcCount=fcData.filter(f=>f.topic===x.topic).length,qCount=qData.filter(q=>q.topic===x.topic).length;
+    return'<div class="rev-topic-card"><div class="rev-topic-header"><div style="width:34px;height:34px;border-radius:9px;background:'+tcol+'22;color:'+tcol+';display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">'+(x.pct>=70?'✅':x.pct>=50?'⚠️':'❌')+'</div><div class="rev-topic-name" style="color:'+tcol+'">'+x.topic+'</div><span class="rev-topic-score" style="background:'+col+'22;color:'+col+'">'+x.c+' de '+x.t+' · '+x.pct+'%</span></div><div class="rev-topic-body"><div class="rev-topic-summary">'+(summ[x.topic]||'Revise este tópico no mapa mental.')+'</div><div class="rev-topic-actions">'+(secId?'<button class="rev-action primary" onclick="scrollToSection(\''+secId+'\')">📖 Ver no Mapa</button>':'')+'<button class="rev-action" onclick="openFCTopic(\''+x.topic.replace(/'/g,"\\'")+'\')" >🃏 Flashcards ('+fcCount+')</button><button class="rev-action" onclick="startTopicQuiz(\''+x.topic.replace(/'/g,"\\'")+'\')">🎯 Questões ('+qCount+')</button></div></div></div>';
+  }).join('')+'<div style="text-align:center;margin-top:20px"><button onclick="startWeakQuiz()" style="font-family:\'Syne\',sans-serif;font-size:13px;font-weight:700;padding:12px 28px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--c4),var(--c5));color:#fff">🔁 Simulado só com Tópicos Fracos</button></div>';
+}
+function openFCTopic(topic){showPage('flashcards');setTimeout(()=>setFCFilter(topic),300);}
+function startTopicQuiz(topic){
+  showPage('simulado');
+  setTimeout(()=>{
+    const data=currentSubject==='gp'?GP_Q:MC_Q;
+    qShuffled=data.filter(q=>q.topic===topic).sort(()=>Math.random()-.5);
+    qIndex=0;qAnswers=[];
+    document.getElementById('quiz-launch').style.display='none';
+    document.getElementById('quiz-active').style.display='block';
+    document.getElementById('quiz-results').style.display='none';
+    renderQuestion();
+  },200);
+}
+function startWeakQuiz(){quizMode='weak';showPage('simulado');setTimeout(startQuiz,100);}
+
+/* ═══ SIDEBAR + DASH ═══ */
+function updateSidebarProgress(){
+  const s=currentSubject;if(!s)return;
+  const prog=getProgress(s);
+  const totalTopics=Object.keys(SUBJECTS[s].sectionIds).length;
+  const seen=(prog.seenTopics||[]).length,topicPct=Math.min(100,Math.round(seen/totalTopics*100));
+  document.getElementById('sp-topics-val').textContent=topicPct+'%';
+  document.getElementById('sp-topics-bar').style.width=topicPct+'%';
+  document.getElementById('sp-simulados').textContent=prog.quizCount||0;
+  document.getElementById('sp-best').textContent=prog.bestScore?prog.bestScore.toFixed(1):'—';
+  document.getElementById('sp-fc').textContent=(prog.seenFC||[]).length;
+}
+function updateDashStats(){
+  const s=currentSubject;if(!s)return;
+  const prog=getProgress(s),hist=getHistory(s);
+  document.getElementById('ds-sim').textContent=prog.quizCount||0;
+  document.getElementById('ds-best').textContent=prog.bestScore?prog.bestScore.toFixed(1):'—';
+  document.getElementById('ds-fc').textContent=(prog.seenFC||[]).length;
+  if(hist.length){const scores=hist.map(h=>h.score);document.getElementById('ds-avg').textContent=(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);}
+  else document.getElementById('ds-avg').textContent='—';
+}
+
+/* ═══ INIT ═══ */
+document.addEventListener('DOMContentLoaded',updateHubStats);
+</script>
+</body>
+</html>
